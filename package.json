@@ -49,20 +49,20 @@
     "No-IP"
   ],
   "dependencies": {
-    "@homebridge/plugin-ui-utils": "^1.0.1",
-    "undici": "^6.6.2",
+    "@homebridge/plugin-ui-utils": "^1.0.2",
+    "undici": "^6.11.1",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "@typescript-eslint/eslint-plugin": "^7.0.1",
-    "@typescript-eslint/parser": "^7.0.1",
-    "eslint": "^8.56.0",
-    "nodemon": "^3.0.3",
+    "@types/node": "^20.12.4",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "eslint": "^8.57.0",
+    "nodemon": "^3.1.0",
     "homebridge": "^1.7.0",
-    "npm-check-updates": "^16.14.15",
+    "npm-check-updates": "^16.14.18",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.4"
   }
 }
