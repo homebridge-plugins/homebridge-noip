@@ -2,10 +2,10 @@
  *
  * device.ts: homebridge-noip.
  */
-import { API, HAP, Logging, PlatformAccessory } from 'homebridge';
-
-import { NoIPPlatform } from '../platform.js';
-import { DevicesConfig, NoIPPlatformConfig } from '../settings.js';
+import type { NoIPPlatform } from '../platform.js';
+import type { DevicesConfig } from '../settings.js';
+import type { NoIPPlatformConfig } from '../settings.js';
+import type { HAP, API, Logging, PlatformAccessory } from 'homebridge';
 
 export abstract class deviceBase {
   public readonly api: API;
