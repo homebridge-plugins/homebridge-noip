@@ -2,14 +2,14 @@
  *
  * contactsensor.ts: homebridge-noip.
  */
-import { Service, PlatformAccessory, CharacteristicValue, IPv4Address } from 'homebridge';
+import { request } from 'undici';
+import { deviceBase } from './device.js';
 import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
-import { request } from 'undici';
 
-import { deviceBase } from './device.js';
-import { NoIPPlatform } from '../platform.js';
-import { DevicesConfig } from '../settings.js';
+import type { NoIPPlatform } from '../platform.js';
+import type { DevicesConfig } from '../settings.js';
+import type { CharacteristicValue, IPv4Address, Service, PlatformAccessory } from 'homebridge';
 
 /**
  * Platform Accessory
