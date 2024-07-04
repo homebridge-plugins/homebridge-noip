@@ -36,6 +36,8 @@ export abstract class deviceBase {
     accessory
       .getService(this.hap.Service.AccessoryInformation)!
       .setCharacteristic(this.hap.Characteristic.Manufacturer, 'No-IP')
+      .setCharacteristic(this.hap.Characteristic.Name, device.hostname.split('.')[0])
+      .setCharacteristic(this.hap.Characteristic.ConfiguredName, device.hostname.split('.')[0])
       .setCharacteristic(this.hap.Characteristic.Model, accessory.context.model)
       .setCharacteristic(this.hap.Characteristic.SerialNumber, accessory.context.serialNumber)
       .setCharacteristic(this.hap.Characteristic.FirmwareRevision, accessory.context.FirmwareRevision);
@@ -97,51 +99,65 @@ export abstract class deviceBase {
   /**
    * Logging for Device
    */
-  infoLog(...log: any[]): void {
-    if (this.enablingDeviceLogging()) {
-      this.log.info(String(...log));
+  async infoLog(...log: any[]): Promise<void> {
+    if (await this.enablingDeviceLogging()) {
+      this.log.info(`${this.accessory.displayName}`, String(...log));
     }
   }
 
-  warnLog(...log: any[]): void {
-    if (this.enablingDeviceLogging()) {
-      this.log.warn(String(...log));
+  async successLog(...log: any[]): Promise<void> {
+    if (await this.enablingDeviceLogging()) {
+      this.log.success(`${this.accessory.displayName}`, String(...log));
     }
   }
 
-  debugWarnLog(...log: any[]): void {
-    if (this.enablingDeviceLogging()) {
+  async debugSuccessLog(...log: any[]): Promise<void> {
+    if (await this.enablingDeviceLogging()) {
       if (this.deviceLogging?.includes('debug')) {
-        this.log.warn('[DEBUG]', String(...log));
+        this.log.success(`[DEBUG] ${this.accessory.displayName}`, String(...log));
       }
     }
   }
 
-  errorLog(...log: any[]): void {
-    if (this.enablingDeviceLogging()) {
-      this.log.error(String(...log));
+  async warnLog(...log: any[]): Promise<void> {
+    if (await this.enablingDeviceLogging()) {
+      this.log.warn(`${this.accessory.displayName}`, String(...log));
     }
   }
 
-  debugErrorLog(...log: any[]): void {
-    if (this.enablingDeviceLogging()) {
+  async debugWarnLog(...log: any[]): Promise<void> {
+    if (await this.enablingDeviceLogging()) {
       if (this.deviceLogging?.includes('debug')) {
-        this.log.error('[DEBUG]', String(...log));
+        this.log.warn(`[DEBUG] ${this.accessory.displayName}`, String(...log));
       }
     }
   }
 
-  debugLog(...log: any[]): void {
-    if (this.enablingDeviceLogging()) {
+  async errorLog(...log: any[]): Promise<void> {
+    if (await this.enablingDeviceLogging()) {
+      this.log.error(`${this.accessory.displayName}`, String(...log));
+    }
+  }
+
+  async debugErrorLog(...log: any[]): Promise<void> {
+    if (await this.enablingDeviceLogging()) {
+      if (this.deviceLogging?.includes('debug')) {
+        this.log.error(`[DEBUG] ${this.accessory.displayName}`, String(...log));
+      }
+    }
+  }
+
+  async debugLog(...log: any[]): Promise<void> {
+    if (await this.enablingDeviceLogging()) {
       if (this.deviceLogging === 'debug') {
-        this.log.info('[DEBUG]', String(...log));
+        this.log.info(`[DEBUG] ${this.accessory.displayName}`, String(...log));
       } else {
-        this.log.debug(String(...log));
+        this.log.debug(`${this.accessory.displayName}`, String(...log));
       }
     }
   }
 
-  enablingDeviceLogging(): boolean {
+  async enablingDeviceLogging(): Promise<boolean> {
     return this.deviceLogging.includes('debug') || this.deviceLogging === 'standard';
   }
 }
