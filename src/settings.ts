@@ -2,7 +2,7 @@
  *
  * settings.ts: homebridge-noip.
  */
-import { PlatformConfig } from 'homebridge';
+import type { PlatformConfig } from 'homebridge';
 /**
  * This is the name of the platform that users will use to register the plugin in the Homebridge config.json
  */
@@ -16,12 +16,12 @@ export const PLUGIN_NAME = 'homebridge-noip';
 //Config
 export interface NoIPPlatformConfig extends PlatformConfig {
   name?: string;
-  devices?: Array<DevicesConfig>;
+  devices?: devicesConfig[];
   refreshRate?: number;
   logging?: string;
 }
 
-export type DevicesConfig = {
+export type devicesConfig = {
   hostname: string;
   username?: string;
   password?: string;

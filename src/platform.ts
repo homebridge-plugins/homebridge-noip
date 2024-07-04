@@ -3,7 +3,7 @@
  * platform.ts: homebridge-noip.
  */
 import type { API, DynamicPlatformPlugin, HAP, Logging, PlatformAccessory } from 'homebridge';
-import type { NoIPPlatformConfig, DevicesConfig } from './settings.js';
+import type { NoIPPlatformConfig, devicesConfig } from './settings.js';
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
 import { ContactSensor } from './devices/contactsensor.js';
 import { request } from 'undici';
@@ -25,6 +25,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   platformConfig!: NoIPPlatformConfig;
   platformLogging!: NoIPPlatformConfig['logging'];
   debugMode!: boolean;
+  version!: string;
 
   constructor(
     log: Logging,
@@ -43,21 +44,26 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // Plugin options into our config variables.
     this.config = {
       platform: 'NoIP',
-      devices: config.devices as DevicesConfig[],
+      devices: config.devices as devicesConfig[],
       refreshRate: config.refreshRate as number,
       logging: config.logging as string,
     };
-    this.platformConfigOptions();
-    this.platformLogs();
+
+    // Plugin options into our config variables.
+    this.getPlatformConfigSettings();
+    this.getPlatformLogSettings();
+    this.getVersion();
+
+    // Finish initializing the platform
     this.debugLog(`Finished initializing platform: ${config.name}`);
 
     // verify the config
     (async () => {
       try {
         await this.verifyConfig();
-        this.debugLog('Config OK');
+        await this.debugLog('Config OK');
       } catch (e: any) {
-        this.errorLog(`Verify Config, Error Message: ${e.message}, Submit Bugs Here: https://bit.ly/homebridge-noip-bug-report`);
+        await this.errorLog(`Verify Config, Error Message: ${e.message}, Submit Bugs Here: https://bit.ly/homebridge-noip-bug-report`);
         this.debugErrorLog(`Verify Config, Error: ${e}`);
         return;
       }
@@ -73,7 +79,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       try {
         await this.discoverDevices();
       } catch (e: any) {
-        this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`);
+        await this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`);
         this.debugErrorLog(`Failed to Discover, Error: ${e}`);
       }
     });
@@ -83,8 +89,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
    * This function is invoked when homebridge restores cached accessories from disk at startup.
    * It should be used to setup event handlers for characteristics and update respective values.
    */
-  configureAccessory(accessory: PlatformAccessory) {
-    this.infoLog(`Loading accessory from cache: ${accessory.displayName}`);
+  async configureAccessory(accessory: PlatformAccessory) {
+    await this.infoLog(`Loading accessory from cache: ${accessory.displayName}`);
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
     this.accessories.push(accessory);
@@ -107,7 +113,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     if (!this.config.refreshRate) {
       // default 900 seconds (15 minutes)
       this.config.refreshRate! = 1800;
-      this.infoLog('Using Default Refresh Rate of 30 minutes.');
+      await this.infoLog('Using Default Refresh Rate of 30 minutes.');
     }
     // Old Config
     if (this.config.hostname || this.config.username || this.config.password) {
@@ -116,25 +122,25 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         username: this.config.username,
         password: this.config.password,
       };
-      this.errorLog(`You still have old config that will be ignored, Old Config: ${JSON.stringify(oldConfig)}`);
+      await this.errorLog(`You still have old config that will be ignored, Old Config: ${JSON.stringify(oldConfig)}`);
     }
     // Device Config
     if (this.config.devices) {
       for (const deviceConfig of this.config.devices) {
         if (!deviceConfig.hostname) {
-          this.errorLog('Missing Domain, Need Domain that will be updated.');
+          await this.errorLog('Missing Domain, Need Domain that will be updated.');
         }
         if (!deviceConfig.username) {
-          this.errorLog('Missing Your No-IP Username(E-mail)');
+          await this.errorLog('Missing Your No-IP Username(E-mail)');
         } else if (!this.validateEmail(deviceConfig.username)) {
-          this.errorLog('Provide a valid Email');
+          await this.errorLog('Provide a valid Email');
         }
         if (!deviceConfig.password) {
-          this.errorLog('Missing your No-IP Password');
+          await this.errorLog('Missing your No-IP Password');
         }
       }
     } else {
-      this.errorLog('verifyConfig, No Device Config');
+      await this.errorLog('verifyConfig, No Device Config');
     }
   }
 
@@ -145,11 +151,11 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   async discoverDevices() {
     try {
       for (const device of this.config.devices!) {
-        this.infoLog(`Discovered ${device.hostname}`);
+        await this.infoLog(`Discovered ${device.hostname}`);
         this.createContactSensor(device);
       }
     } catch {
-      this.errorLog('discoverDevices, No Device Config');
+      await this.errorLog('discoverDevices, No Device Config');
     }
   }
 
@@ -163,41 +169,39 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     if (existingAccessory) {
       // the accessory already exists
       if (!device.delete) {
-        this.infoLog(`Restoring existing accessory from cache: ${existingAccessory.displayName}`);
-
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-        existingAccessory.displayName = device.hostname;
         existingAccessory.context.device = device;
+        existingAccessory.displayName = device.hostname.split('.')[0];
         existingAccessory.context.serialNumber = await this.publicIPv4();
-        this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
-        existingAccessory.context.FirmwareRevision = await this.FirmwareRevision(device);
+        existingAccessory.context.version = await this.getVersion();
         this.api.updatePlatformAccessories([existingAccessory]);
+        // Restore accessory
+        await this.infoLog(`Restoring existing accessory from cache: ${existingAccessory.displayName}`);
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
         new ContactSensor(this, existingAccessory, device);
-        this.debugLog(`uuid: ${device.hostname}`);
+        await this.debugLog(`uuid: ${device.hostname}`);
       } else {
         this.unregisterPlatformAccessories(existingAccessory);
       }
     } else if (!device.delete) {
-      // the accessory does not yet exist, so we need to create it
-      this.infoLog(`Adding new accessory: ${device.hostname}`);
-
       // create a new accessory
       const accessory = new this.api.platformAccessory(device.hostname, uuid);
 
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
-      accessory.context.device = device.hostname;
+      accessory.context.device = device;
+      accessory.displayName = device.hostname.split('.')[0];
       accessory.context.serialNumber = await this.publicIPv4();
-      this.debugLog(JSON.stringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
-      accessory.context.FirmwareRevision = await this.FirmwareRevision(device);
+      accessory.context.version = await this.getVersion();;
+      // the accessory does not yet exist, so we need to create it
+      await this.infoLog(`Adding new accessory: ${device.hostname}`);
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
       new ContactSensor(this, accessory, device);
-      this.debugLog(`${device.hostname} uuid: ${device.hostname}`);
+      await this.debugLog(`${device.hostname} uuid: ${device.hostname}`);
 
       // link the accessory to your platform
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
@@ -207,20 +211,10 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     }
   }
 
-  async FirmwareRevision(device: { firmware: any; }): Promise<any> {
-    let firmware: any;
-    if (device.firmware) {
-      firmware = device.firmware;
-    } else {
-      firmware = await this.getVersion();
-    }
-    return firmware;
-  }
-
-  public unregisterPlatformAccessories(existingAccessory: PlatformAccessory) {
+  public async unregisterPlatformAccessories(existingAccessory: PlatformAccessory) {
     // remove platform accessories when no longer present
     this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
-    this.warnLog(`Removing existing accessory from cache: ${existingAccessory.displayName}`);
+    await this.warnLog(`Removing existing accessory from cache: ${existingAccessory.displayName}`);
   }
 
   async publicIPv4() {
@@ -233,11 +227,11 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`);
       this.debugWarnLog(`Headers: ${JSON.stringify(headers)}`);
       //const pubIp = (await axios.get('https://ipinfo.io/json')).data;
-      //this.debugLog(JSON.stringify(pubIp));
+      //await this.debugLog(JSON.stringify(pubIp));
       const IPv4 = pubIp.ip;
       return IPv4;
     } catch {
-      this.errorLog('Not Able To Retreive IP Address');
+      await this.errorLog('Not Able To Retreive IP Address');
     }
   }
 
@@ -249,7 +243,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     }
   }
 
-  async platformConfigOptions() {
+  async getPlatformConfigSettings() {
     const platformConfig: NoIPPlatformConfig = {
       platform: '',
     };
@@ -260,32 +254,22 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       platformConfig.refreshRate = this.config.refreshRate;
     }
     if (Object.entries(platformConfig).length !== 0) {
-      this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`);
+      await this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`);
     }
     this.platformConfig = platformConfig;
   }
 
-  async platformLogs() {
+  async getPlatformLogSettings() {
     this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
-    this.platformLogging = this.config.options?.logging || 'standard';
     if (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard' || this.config.options?.logging === 'none') {
       this.platformLogging = this.config.options.logging;
-      if (this.platformLogging?.includes('debug')) {
-        this.debugWarnLog(`Using Config Logging: ${this.platformLogging}`);
-      }
+      await this.debugWarnLog(`Using Config Logging: ${this.platformLogging}`);
     } else if (this.debugMode) {
       this.platformLogging = 'debugMode';
-      if (this.platformLogging?.includes('debug')) {
-        this.debugWarnLog(`Using ${this.platformLogging} Logging`);
-      }
+      await this.debugWarnLog(`Using ${this.platformLogging} Logging`);
     } else {
       this.platformLogging = 'standard';
-      if (this.platformLogging?.includes('debug')) {
-        this.debugWarnLog(`Using ${this.platformLogging} Logging`);
-      }
-    }
-    if (this.debugMode) {
-      this.platformLogging = 'debugMode';
+      await this.debugWarnLog(`Using ${this.platformLogging} Logging`);
     }
   }
 
@@ -296,8 +280,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         'utf-8',
       ),
     );
-    this.debugLog(`Plugin Version: ${json.version}`);
-    return json.version;
+    await this.debugLog(`Plugin Version: ${json.version}`);
+    this.version = json.version;
   }
 
   /**
