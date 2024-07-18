@@ -110,7 +110,7 @@ export abstract class deviceBase {
 
   async debugSuccessLog(...log: any[]): Promise<void> {
     if (await this.enablingDeviceLogging()) {
-      if (this.deviceLogging?.includes('debug')) {
+      if (await this.loggingIsDebug()) {
         this.log.success(`[DEBUG] Contact Sensor: ${this.accessory.displayName} `, String(...log));
       }
     }
@@ -124,7 +124,7 @@ export abstract class deviceBase {
 
   async debugWarnLog(...log: any[]): Promise<void> {
     if (await this.enablingDeviceLogging()) {
-      if (this.deviceLogging?.includes('debug')) {
+      if (await this.loggingIsDebug()) {
         this.log.warn(`[DEBUG] Contact Sensor: ${this.accessory.displayName} `, String(...log));
       }
     }
@@ -138,7 +138,7 @@ export abstract class deviceBase {
 
   async debugErrorLog(...log: any[]): Promise<void> {
     if (await this.enablingDeviceLogging()) {
-      if (this.deviceLogging?.includes('debug')) {
+      if (await this.loggingIsDebug()) {
         this.log.error(`[DEBUG] Contact Sensor: ${this.accessory.displayName} `, String(...log));
       }
     }
@@ -148,13 +148,17 @@ export abstract class deviceBase {
     if (await this.enablingDeviceLogging()) {
       if (this.deviceLogging === 'debug') {
         this.log.info(`[DEBUG] Contact Sensor: ${this.accessory.displayName} `, String(...log));
-      } else {
+      } else if (this.deviceLogging === 'debugMode') {
         this.log.debug(`Contact Sensor: ${this.accessory.displayName} `, String(...log));
       }
     }
   }
 
+  async loggingIsDebug(): Promise<boolean> {
+    return this.deviceLogging === 'debugMode' || this.deviceLogging === 'debug';
+  }
+
   async enablingDeviceLogging(): Promise<boolean> {
-    return this.deviceLogging.includes('debug') || this.deviceLogging === 'standard';
+    return this.deviceLogging === 'debugMode' || this.deviceLogging === 'debug' || this.deviceLogging === 'standard';
   }
 }
