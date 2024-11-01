@@ -4,7 +4,7 @@
  */
 import type { API, DynamicPlatformPlugin, HAP, Logging, PlatformAccessory } from 'homebridge'
 
-import type { devicesConfig, NoIPPlatformConfig } from './settings.js'
+import type { devicesConfig, NoIPPlatformConfig, options } from './settings.js'
 
 import { readFileSync } from 'node:fs'
 import { argv } from 'node:process'
@@ -28,7 +28,10 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   public config!: NoIPPlatformConfig
 
   platformConfig!: NoIPPlatformConfig
-  platformLogging!: NoIPPlatformConfig['logging']
+  platformLogging!: options['logging']
+  platformRefreshRate!: options['refreshRate']
+  platformPushRate!: options['pushRate']
+  platformUpdateRate!: options['updateRate']
   debugMode!: boolean
   version!: string
 
@@ -54,8 +57,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       logging: config.logging as string,
     }
 
-    // Plugin options into our config variables.
+    // Plugin Configuration
     this.getPlatformConfigSettings()
+    this.getPlatformRateSettings()
     this.getPlatformLogSettings()
     this.getVersion()
 
@@ -255,33 +259,41 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   }
 
   async getPlatformConfigSettings() {
-    const platformConfig: NoIPPlatformConfig = {
-      platform: '',
+    if (this.config.options) {
+      const platformConfig: NoIPPlatformConfig = {
+        platform: 'NoIP',
+      }
+      platformConfig.logging = this.config.options.logging ? this.config.options.logging : undefined
+      platformConfig.refreshRate = this.config.options.refreshRate ? this.config.options.refreshRate : undefined
+      platformConfig.updateRate = this.config.options.updateRate ? this.config.options.updateRate : undefined
+      platformConfig.pushRate = this.config.options.pushRate ? this.config.options.pushRate : undefined
+      if (Object.entries(platformConfig).length !== 0) {
+        await this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`)
+      }
+      this.platformConfig = platformConfig
     }
-    if (this.config.logging) {
-      platformConfig.logging = this.config.logging
-    }
-    if (this.config.refreshRate) {
-      platformConfig.refreshRate = this.config.refreshRate
-    }
-    if (Object.entries(platformConfig).length !== 0) {
-      await this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`)
-    }
-    this.platformConfig = platformConfig
+  }
+
+  async getPlatformRateSettings() {
+    this.platformRefreshRate = this.config.options?.refreshRate ? this.config.options.refreshRate : 0
+    const refreshRate = this.config.options?.refreshRate ? 'Using Platform Config refreshRate' : 'refreshRate Disabled by Default'
+    await this.debugLog(`${refreshRate}: ${this.platformRefreshRate}`)
+    this.platformUpdateRate = this.config.options?.updateRate ? this.config.options.updateRate : 1
+    const updateRate = this.config.options?.updateRate ? 'Using Platform Config updateRate' : 'Using Default updateRate'
+    await this.debugLog(`${updateRate}: ${this.platformUpdateRate}`)
+    this.platformPushRate = this.config.options?.pushRate ? this.config.options.pushRate : 1
+    const pushRate = this.config.options?.pushRate ? 'Using Platform Config pushRate' : 'Using Default pushRate'
+    await this.debugLog(`${pushRate}: ${this.platformPushRate}`)
   }
 
   async getPlatformLogSettings() {
-    this.debugMode = argv.includes('-D') || argv.includes('--debug')
-    if (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard' || this.config.options?.logging === 'none') {
-      this.platformLogging = this.config.options.logging
-      await this.debugWarnLog(`Using Config Logging: ${this.platformLogging}`)
-    } else if (this.debugMode) {
-      this.platformLogging = 'debugMode'
-      await this.debugWarnLog(`Using ${this.platformLogging} Logging`)
-    } else {
-      this.platformLogging = 'standard'
-      await this.debugWarnLog(`Using ${this.platformLogging} Logging`)
-    }
+    this.debugMode = argv.includes('-D') ?? argv.includes('--debug')
+    this.platformLogging = (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard'
+      || this.config.options?.logging === 'none')
+      ? this.config.options.logging
+      : this.debugMode ? 'debugMode' : 'standard'
+    const logging = this.config.options?.logging ? 'Platform Config' : this.debugMode ? 'debugMode' : 'Default'
+    await this.debugLog(`Using ${logging} Logging: ${this.platformLogging}`)
   }
 
   /**
@@ -392,10 +404,10 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   async debugLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
-      if (this.platformLogging === 'debug') {
-        this.log.info('[DEBUG]', String(...log))
-      } else if (this.platformLogging === 'debugMode') {
+      if (this.platformLogging === 'debugMode') {
         this.log.debug(String(...log))
+      } else if (this.platformLogging === 'debug') {
+        this.log.info('[DEBUG]', String(...log))
       }
     }
   }

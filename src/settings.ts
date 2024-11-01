@@ -17,8 +17,7 @@ export const PLUGIN_NAME = 'homebridge-noip'
 export interface NoIPPlatformConfig extends PlatformConfig {
   name?: string
   devices?: devicesConfig[]
-  refreshRate?: number
-  logging?: string
+  options?: options
 }
 
 export interface devicesConfig {
@@ -30,4 +29,12 @@ export interface devicesConfig {
   refreshRate?: number
   logging?: string
   delete?: boolean
+}
+
+export interface options {
+  refreshRate?: number
+  updateRate?: number
+  pushRate?: number
+  logging?: string
+  allowInvalidCharacters?: boolean
 }
