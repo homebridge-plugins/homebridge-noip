@@ -52,9 +52,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // Plugin options into our config variables.
     this.config = {
       platform: 'NoIP',
+      name: config.name,
       devices: config.devices as devicesConfig[],
-      refreshRate: config.refreshRate as number,
-      logging: config.logging as string,
+      options: config.options as options,
     }
 
     // Plugin Configuration
@@ -114,15 +114,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
      */
     this.config.logging = this.config.logging || 'standard'
 
-    if (this.config.refreshRate! < 1800) {
-      throw new Error('Refresh Rate must be above 1800 (30 minutes).')
-    }
-
-    if (!this.config.refreshRate) {
-      // default 900 seconds (15 minutes)
-      this.config.refreshRate! = 1800
-      await this.infoLog('Using Default Refresh Rate of 30 minutes.')
-    }
     // Old Config
     if (this.config.hostname || this.config.username || this.config.password) {
       const oldConfig = {
@@ -275,7 +266,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   }
 
   async getPlatformRateSettings() {
-    this.platformRefreshRate = this.config.options?.refreshRate ? this.config.options.refreshRate : 0
+    this.platformRefreshRate = Math.max(this.config.options?.refreshRate ?? 1800, 1800)
     const refreshRate = this.config.options?.refreshRate ? 'Using Platform Config refreshRate' : 'refreshRate Disabled by Default'
     await this.debugLog(`${refreshRate}: ${this.platformRefreshRate}`)
     this.platformUpdateRate = this.config.options?.updateRate ? this.config.options.updateRate : 1

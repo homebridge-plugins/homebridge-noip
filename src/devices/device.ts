@@ -51,8 +51,8 @@ export abstract class deviceBase {
   }
 
   async getDeviceRateSettings(accessory: PlatformAccessory, device: devicesConfig): Promise<void> {
-    this.deviceRefreshRate = device.refreshRate ?? this.config.refreshRate ?? 1800
-    const refreshRate = device.refreshRate ? 'Device' : this.config.refreshRate ? 'Platform' : 'Default'
+    this.deviceRefreshRate = device.refreshRate ?? this.platform.platformRefreshRate ?? 1800
+    const refreshRate = device.refreshRate ? 'Device' : this.platform.platformRefreshRate ? 'Platform' : 'Default'
     await this.debugLog(`Using ${refreshRate} refreshRate: ${this.deviceRefreshRate}`)
   }
 
