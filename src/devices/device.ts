@@ -44,8 +44,8 @@ export abstract class deviceBase {
   }
 
   async getDeviceLogSettings(accessory: PlatformAccessory, device: devicesConfig): Promise<void> {
-    this.deviceLogging = this.platform.debugMode ? 'debugMode' : device.logging ?? this.config.logging ?? 'standard'
-    const logging = this.platform.debugMode ? 'Debug Mode' : device.logging ? 'Device Config' : this.config.logging ? 'Platform Config' : 'Default'
+    this.deviceLogging = this.platform.debugMode ? 'debugMode' : device.logging ?? this.platform.platformLogging ?? 'standard'
+    const logging = this.platform.debugMode ? 'Debug Mode' : device.logging ? 'Device Config' : this.platform.platformLogging ? 'Platform Config' : 'Default'
     accessory.context.deviceLogging = this.deviceLogging
     await this.debugLog(`Using ${logging} Logging: ${this.deviceLogging}`)
   }
