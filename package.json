@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-noip",
+  "name": "@homebridge-plugins/homebridge-noip",
   "displayName": "No-IP",
   "type": "module",
   "version": "3.0.5",
