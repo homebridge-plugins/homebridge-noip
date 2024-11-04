@@ -4,5 +4,5 @@ contact_links:
     url: https://discord.gg/8fpZA4S
     about: Please ask and answer questions here.
   - name: Homebridge-noip - Pull Requests
-    url: https://github.com/donavanbecker/homebridge-noip/pulls
+    url: https://github.com/homebridge-plugins/homebridge-noip/pulls
     about: Please report security vulnerabilities here.

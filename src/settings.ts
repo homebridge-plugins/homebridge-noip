@@ -2,31 +2,39 @@
  *
  * settings.ts: homebridge-noip.
  */
-import type { PlatformConfig } from 'homebridge';
+import type { PlatformConfig } from 'homebridge'
 /**
  * This is the name of the platform that users will use to register the plugin in the Homebridge config.json
  */
-export const PLATFORM_NAME = 'NoIP';
+export const PLATFORM_NAME = 'NoIP'
 
 /**
  * This must match the name of your plugin as defined the package.json
  */
-export const PLUGIN_NAME = 'homebridge-noip';
+export const PLUGIN_NAME = 'homebridge-noip'
 
-//Config
+// Config
 export interface NoIPPlatformConfig extends PlatformConfig {
-  name?: string;
-  devices?: devicesConfig[];
-  refreshRate?: number;
-  logging?: string;
+  name?: string
+  devices?: devicesConfig[]
+  options?: options
 }
 
-export type devicesConfig = {
-  hostname: string;
-  username?: string;
-  password?: string;
-  firmware: string;
-  refreshRate?: number;
-  logging?: string;
-  delete?: boolean;
-};
+export interface devicesConfig {
+  configDeviceName?: string
+  hostname: string
+  username?: string
+  password?: string
+  firmware: string
+  refreshRate?: number
+  logging?: string
+  delete?: boolean
+}
+
+export interface options {
+  refreshRate?: number
+  updateRate?: number
+  pushRate?: number
+  logging?: string
+  allowInvalidCharacters?: boolean
+}
