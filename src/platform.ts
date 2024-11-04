@@ -2,13 +2,18 @@
  *
  * platform.ts: homebridge-noip.
  */
-import type { API, DynamicPlatformPlugin, HAP, Logging, PlatformAccessory } from 'homebridge';
-import type { NoIPPlatformConfig, devicesConfig } from './settings.js';
-import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
-import { ContactSensor } from './devices/contactsensor.js';
-import { request } from 'undici';
-import { readFileSync } from 'fs';
-import validator from 'validator';
+import type { API, DynamicPlatformPlugin, HAP, Logging, PlatformAccessory } from 'homebridge'
+
+import type { devicesConfig, NoIPPlatformConfig, options } from './settings.js'
+
+import { readFileSync } from 'node:fs'
+import { argv } from 'node:process'
+
+import { request } from 'undici'
+import validator from 'validator'
+
+import { ContactSensor } from './devices/contactsensor.js'
+import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
 
 /**
  * HomebridgePlatform
@@ -16,43 +21,47 @@ import validator from 'validator';
  * parse the user config and discover/register accessories with Homebridge.
  */
 export class NoIPPlatform implements DynamicPlatformPlugin {
-  public accessories: PlatformAccessory[];
-  public readonly api: API;
-  public readonly log: Logging;
-  protected readonly hap: HAP;
-  public config!: NoIPPlatformConfig;
+  public accessories: PlatformAccessory[]
+  public readonly api: API
+  public readonly log: Logging
+  protected readonly hap: HAP
+  public config!: NoIPPlatformConfig
 
-  platformConfig!: NoIPPlatformConfig;
-  platformLogging!: NoIPPlatformConfig['logging'];
-  debugMode!: boolean;
-  version!: string;
+  platformConfig!: NoIPPlatformConfig
+  platformLogging!: options['logging']
+  platformRefreshRate!: options['refreshRate']
+  platformPushRate!: options['pushRate']
+  platformUpdateRate!: options['updateRate']
+  debugMode!: boolean
+  version!: string
 
   constructor(
     log: Logging,
     config: NoIPPlatformConfig,
     api: API,
   ) {
-    this.accessories = [];
-    this.api = api;
-    this.hap = this.api.hap;
-    this.log = log;
+    this.accessories = []
+    this.api = api
+    this.hap = this.api.hap
+    this.log = log
     // only load if configured
     if (!config) {
-      return;
+      return
     }
 
     // Plugin options into our config variables.
     this.config = {
       platform: 'NoIP',
+      name: config.name,
       devices: config.devices as devicesConfig[],
-      refreshRate: config.refreshRate as number,
-      logging: config.logging as string,
-    };
+      options: config.options as options,
+    }
 
-    // Plugin options into our config variables.
-    this.getPlatformConfigSettings();
-    this.getPlatformLogSettings();
-    this.getVersion();
+    // Plugin Configuration
+    this.getPlatformLogSettings()
+    this.getPlatformRateSettings()
+    this.getPlatformConfigSettings()
+    this.getVersion()
 
     // Finish initializing the platform
     this.debugLog(`Finished initializing platform: ${config.name}`);
@@ -60,29 +69,28 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // verify the config
     (async () => {
       try {
-        await this.verifyConfig();
-        await this.debugLog('Config OK');
+        await this.verifyConfig()
+        await this.debugLog('Config OK')
       } catch (e: any) {
-        await this.errorLog(`Verify Config, Error Message: ${e.message}, Submit Bugs Here: https://bit.ly/homebridge-noip-bug-report`);
-        this.debugErrorLog(`Verify Config, Error: ${e}`);
-        return;
+        await this.errorLog(`Verify Config, Error Message: ${e.message}, Submit Bugs Here: https://bit.ly/homebridge-noip-bug-report`)
+        this.debugErrorLog(`Verify Config, Error: ${e}`)
       }
-    })();
+    })()
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
     // in order to ensure they weren't added to homebridge already. This event can also be used
     // to start discovery of new accessories.
     this.api.on('didFinishLaunching', async () => {
-      log.debug('Executed didFinishLaunching callback');
+      log.debug('Executed didFinishLaunching callback')
       // run the method to discover / register your devices as accessories
       try {
-        await this.discoverDevices();
+        await this.discoverDevices()
       } catch (e: any) {
-        await this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`);
-        this.debugErrorLog(`Failed to Discover, Error: ${e}`);
+        await this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`)
+        this.debugErrorLog(`Failed to Discover, Error: ${e}`)
       }
-    });
+    })
   }
 
   /**
@@ -90,10 +98,10 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
    * It should be used to setup event handlers for characteristics and update respective values.
    */
   async configureAccessory(accessory: PlatformAccessory) {
-    await this.infoLog(`Loading accessory from cache: ${accessory.displayName}`);
+    await this.infoLog(`Loading accessory from cache: ${accessory.displayName}`)
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
-    this.accessories.push(accessory);
+    this.accessories.push(accessory)
   }
 
   /**
@@ -104,43 +112,34 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
      * Hidden Device Discovery Option
      * This will disable adding any device and will just output info.
      */
-    this.config.logging = this.config.logging || 'standard';
+    this.config.logging = this.config.logging || 'standard'
 
-    if (this.config.refreshRate! < 1800) {
-      throw new Error('Refresh Rate must be above 1800 (30 minutes).');
-    }
-
-    if (!this.config.refreshRate) {
-      // default 900 seconds (15 minutes)
-      this.config.refreshRate! = 1800;
-      await this.infoLog('Using Default Refresh Rate of 30 minutes.');
-    }
     // Old Config
     if (this.config.hostname || this.config.username || this.config.password) {
       const oldConfig = {
         hostname: this.config.hostname,
         username: this.config.username,
         password: this.config.password,
-      };
-      await this.errorLog(`You still have old config that will be ignored, Old Config: ${JSON.stringify(oldConfig)}`);
+      }
+      await this.errorLog(`You still have old config that will be ignored, Old Config: ${JSON.stringify(oldConfig)}`)
     }
     // Device Config
     if (this.config.devices) {
       for (const deviceConfig of this.config.devices) {
         if (!deviceConfig.hostname) {
-          await this.errorLog('Missing Domain, Need Domain that will be updated.');
+          await this.errorLog('Missing Domain, Need Domain that will be updated.')
         }
         if (!deviceConfig.username) {
-          await this.errorLog('Missing Your No-IP Username(E-mail)');
+          await this.errorLog('Missing Your No-IP Username(E-mail)')
         } else if (!this.validateEmail(deviceConfig.username)) {
-          await this.errorLog('Provide a valid Email');
+          await this.errorLog('Provide a valid Email')
         }
         if (!deviceConfig.password) {
-          await this.errorLog('Missing your No-IP Password');
+          await this.errorLog('Missing your No-IP Password')
         }
       }
     } else {
-      await this.errorLog('verifyConfig, No Device Config');
+      await this.errorLog('verifyConfig, No Device Config')
     }
   }
 
@@ -151,137 +150,195 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   async discoverDevices() {
     try {
       for (const device of this.config.devices!) {
-        await this.infoLog(`Discovered ${device.hostname}`);
-        this.createContactSensor(device);
+        await this.infoLog(`Discovered ${device.hostname}`)
+        this.createContactSensor(device)
       }
     } catch {
-      await this.errorLog('discoverDevices, No Device Config');
+      await this.errorLog('discoverDevices, No Device Config')
     }
   }
 
   private async createContactSensor(device: any) {
-    const uuid = this.api.hap.uuid.generate(device.hostname);
+    const uuid = this.api.hap.uuid.generate(device.hostname)
 
     // see if an accessory with the same uuid has already been registered and restored from
     // the cached devices we stored in the `configureAccessory` method above
-    const existingAccessory = this.accessories.find((accessory) => accessory.UUID === uuid);
+    const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid)
 
     if (existingAccessory) {
       // the accessory already exists
       if (!device.delete) {
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-        existingAccessory.context.device = device;
-        existingAccessory.displayName = device.hostname.split('.')[0];
-        existingAccessory.context.serialNumber = await this.publicIPv4();
-        existingAccessory.context.model = 'DUC';
-        existingAccessory.context.version = await this.getVersion();
-        this.api.updatePlatformAccessories([existingAccessory]);
+        const hostname = device.hostname.split('.')[0]
+        existingAccessory.context.device = device
+        existingAccessory.displayName = device.configDeviceName
+          ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.userDefinedDeviceName)
+          : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
+
+        existingAccessory.context.serialNumber = await this.publicIPv4()
+        existingAccessory.context.model = 'DUC'
+        existingAccessory.context.version = await this.getVersion()
+        this.api.updatePlatformAccessories([existingAccessory])
         // Restore accessory
-        await this.infoLog(`Restoring existing accessory from cache: ${existingAccessory.displayName}`);
+        await this.infoLog(`Restoring existing accessory from cache: ${existingAccessory.displayName}`)
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
-        new ContactSensor(this, existingAccessory, device);
-        await this.debugLog(`uuid: ${device.hostname}`);
+        new ContactSensor(this, existingAccessory, device)
+        await this.debugLog(`uuid: ${device.hostname}`)
       } else {
-        this.unregisterPlatformAccessories(existingAccessory);
+        this.unregisterPlatformAccessories(existingAccessory)
       }
     } else if (!device.delete) {
       // create a new accessory
-      const accessory = new this.api.platformAccessory(device.hostname, uuid);
+      const accessory = new this.api.platformAccessory(device.hostname, uuid)
 
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
-      accessory.context.device = device;
-      accessory.displayName = device.hostname.split('.')[0];
-      accessory.context.serialNumber = await this.publicIPv4();
-      accessory.context.model = 'DUC';
-      accessory.context.version = await this.getVersion();;
+      const hostname = device.hostname.split('.')[0]
+      accessory.context.device = device
+      accessory.displayName = device.configDeviceName
+        ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.userDefinedDeviceName)
+        : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
+      accessory.context.serialNumber = await this.publicIPv4()
+      accessory.context.model = 'DUC'
+      accessory.context.version = await this.getVersion()
       // the accessory does not yet exist, so we need to create it
-      await this.infoLog(`Adding new accessory: ${device.hostname}`);
+      await this.infoLog(`Adding new accessory: ${device.hostname}`)
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
-      new ContactSensor(this, accessory, device);
-      await this.debugLog(`${device.hostname} uuid: ${device.hostname}`);
+      new ContactSensor(this, accessory, device)
+      await this.debugLog(`${device.hostname} uuid: ${device.hostname}`)
 
       // link the accessory to your platform
-      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-      this.accessories.push(accessory);
+      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory])
+      this.accessories.push(accessory)
     } else {
-      this.debugErrorLog(`Unable to Register new device: ${JSON.stringify(device.hostname)}`);
+      this.debugErrorLog(`Unable to Register new device: ${JSON.stringify(device.hostname)}`)
     }
   }
 
   public async unregisterPlatformAccessories(existingAccessory: PlatformAccessory) {
     // remove platform accessories when no longer present
-    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
-    await this.warnLog(`Removing existing accessory from cache: ${existingAccessory.displayName}`);
+    this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory])
+    await this.warnLog(`Removing existing accessory from cache: ${existingAccessory.displayName}`)
   }
 
   async publicIPv4() {
     try {
       const { body, statusCode, headers } = await request('https://ipinfo.io/json', {
         method: 'GET',
-      });
-      const pubIp: any = await body.json();
-      this.debugWarnLog(`IP Address: ${JSON.stringify(pubIp.ip)}`);
-      this.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`);
-      this.debugWarnLog(`Headers: ${JSON.stringify(headers)}`);
-      //const pubIp = (await axios.get('https://ipinfo.io/json')).data;
-      //await this.debugLog(JSON.stringify(pubIp));
-      const IPv4 = pubIp.ip;
-      return IPv4;
+      })
+      const pubIp: any = await body.json()
+      this.debugWarnLog(`IP Address: ${JSON.stringify(pubIp.ip)}`)
+      this.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`)
+      this.debugWarnLog(`Headers: ${JSON.stringify(headers)}`)
+      // const pubIp = (await axios.get('https://ipinfo.io/json')).data;
+      // await this.debugLog(JSON.stringify(pubIp));
+      const IPv4 = pubIp.ip
+      return IPv4
     } catch {
-      await this.errorLog('Not Able To Retreive IP Address');
+      await this.errorLog('Not Able To Retreive IP Address')
     }
   }
 
   validateEmail(email: string | undefined) {
     if (!email) {
-      return false;
+      return false
     } else {
-      return validator.isEmail(email);
+      return validator.isEmail(email)
     }
   }
 
   async getPlatformConfigSettings() {
-    const platformConfig: NoIPPlatformConfig = {
-      platform: '',
-    };
-    if (this.config.logging) {
-      platformConfig.logging = this.config.logging;
+    if (this.config.options) {
+      const platformConfig: NoIPPlatformConfig = {
+        platform: 'NoIP',
+      }
+      platformConfig.logging = this.config.options.logging ? this.config.options.logging : undefined
+      platformConfig.refreshRate = this.config.options.refreshRate ? this.config.options.refreshRate : undefined
+      platformConfig.updateRate = this.config.options.updateRate ? this.config.options.updateRate : undefined
+      platformConfig.pushRate = this.config.options.pushRate ? this.config.options.pushRate : undefined
+      if (Object.entries(platformConfig).length !== 0) {
+        await this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`)
+      }
+      this.platformConfig = platformConfig
     }
-    if (this.config.refreshRate) {
-      platformConfig.refreshRate = this.config.refreshRate;
-    }
-    if (Object.entries(platformConfig).length !== 0) {
-      await this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`);
-    }
-    this.platformConfig = platformConfig;
+  }
+
+  async getPlatformRateSettings() {
+    this.platformRefreshRate = Math.max(this.config.options?.refreshRate ?? 1800, 1800)
+    const refreshRate = this.config.options?.refreshRate ? 'Using Platform Config refreshRate' : 'refreshRate Disabled by Default'
+    await this.debugLog(`${refreshRate}: ${this.platformRefreshRate}`)
+    this.platformUpdateRate = this.config.options?.updateRate ? this.config.options.updateRate : 1
+    const updateRate = this.config.options?.updateRate ? 'Using Platform Config updateRate' : 'Using Default updateRate'
+    await this.debugLog(`${updateRate}: ${this.platformUpdateRate}`)
+    this.platformPushRate = this.config.options?.pushRate ? this.config.options.pushRate : 1
+    const pushRate = this.config.options?.pushRate ? 'Using Platform Config pushRate' : 'Using Default pushRate'
+    await this.debugLog(`${pushRate}: ${this.platformPushRate}`)
   }
 
   async getPlatformLogSettings() {
-    this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
-    if (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard' || this.config.options?.logging === 'none') {
-      this.platformLogging = this.config.options.logging;
-      await this.debugWarnLog(`Using Config Logging: ${this.platformLogging}`);
-    } else if (this.debugMode) {
-      this.platformLogging = 'debugMode';
-      await this.debugWarnLog(`Using ${this.platformLogging} Logging`);
-    } else {
-      this.platformLogging = 'standard';
-      await this.debugWarnLog(`Using ${this.platformLogging} Logging`);
-    }
+    this.debugMode = argv.includes('-D') ?? argv.includes('--debug')
+    this.platformLogging = (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard'
+      || this.config.options?.logging === 'none')
+      ? this.config.options.logging
+      : this.debugMode ? 'debugMode' : 'standard'
+    const logging = this.config.options?.logging ? 'Platform Config' : this.debugMode ? 'debugMode' : 'Default'
+    await this.debugLog(`Using ${logging} Logging: ${this.platformLogging}`)
   }
 
-  async getVersion() {
-    const json = JSON.parse(
-      readFileSync(
-        new URL('../package.json', import.meta.url),
-        'utf-8',
-      ),
-    );
-    await this.debugLog(`Plugin Version: ${json.version}`);
-    this.version = json.version;
+  /**
+   * Asynchronously retrieves the version of the plugin from the package.json file.
+   *
+   * This method reads the package.json file located in the parent directory,
+   * parses its content to extract the version, and logs the version using the debug logger.
+   * The extracted version is then assigned to the `version` property of the class.
+   *
+   * @returns {Promise<void>} A promise that resolves when the version has been retrieved and logged.
+   */
+  async getVersion(): Promise<void> {
+    const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'))
+    this.debugLog(`Plugin Version: ${version}`)
+    this.version = version
+  }
+
+  /**
+   * Validate and clean a string value for a Name Characteristic.
+   * @param displayName - The display name of the accessory.
+   * @param name - The name of the characteristic.
+   * @param value - The value to be validated and cleaned.
+   * @returns The cleaned string value.
+   */
+  async validateAndCleanDisplayName(displayName: string, name: string, value: string): Promise<string> {
+    if (this.config.options?.allowInvalidCharacters) {
+      return value
+    } else {
+      const validPattern = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
+      const invalidCharsPattern = /[^\p{L}\p{N} ']/gu
+      const invalidStartEndPattern = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu
+
+      if (typeof value === 'string' && !validPattern.test(value)) {
+        this.warnLog(`WARNING: The accessory '${displayName}' has an invalid '${name}' characteristic ('${value}'). Please use only alphanumeric, space, and apostrophe characters. Ensure it starts and ends with an alphabetic or numeric character, and avoid emojis. This may prevent the accessory from being added in the Home App or cause unresponsiveness.`)
+
+        // Remove invalid characters
+        if (invalidCharsPattern.test(value)) {
+          const before = value
+          this.warnLog(`Removing invalid characters from '${name}' characteristic, if you feel this is incorrect,  please enable \'allowInvalidCharacter\' in the config to allow all characters`)
+          value = value.replace(invalidCharsPattern, '')
+          this.warnLog(`${name} Before: '${before}' After: '${value}'`)
+        }
+
+        // Ensure it starts and ends with an alphanumeric character
+        if (invalidStartEndPattern.test(value)) {
+          const before = value
+          this.warnLog(`Removing invalid starting or ending characters from '${name}' characteristic, if you feel this is incorrect, please enable \'allowInvalidCharacter\' in the config to allow all characters`)
+          value = value.replace(invalidStartEndPattern, '')
+          this.warnLog(`${name} Before: '${before}' After: '${value}'`)
+        }
+      }
+
+      return value
+    }
   }
 
   /**
@@ -290,67 +347,67 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
    */
   async infoLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
-      this.log.info(String(...log));
+      this.log.info(String(...log))
     }
   }
 
   async successLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
-      this.log.success(String(...log));
+      this.log.success(String(...log))
     }
   }
 
   async debugSuccessLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
       if (await this.loggingIsDebug()) {
-        this.log.success('[DEBUG]', String(...log));
+        this.log.success('[DEBUG]', String(...log))
       }
     }
   }
 
   async warnLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
-      this.log.warn(String(...log));
+      this.log.warn(String(...log))
     }
   }
 
   async debugWarnLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
       if (await this.loggingIsDebug()) {
-        this.log.warn('[DEBUG]', String(...log));
+        this.log.warn('[DEBUG]', String(...log))
       }
     }
   }
 
   async errorLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
-      this.log.error(String(...log));
+      this.log.error(String(...log))
     }
   }
 
   async debugErrorLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
       if (await this.loggingIsDebug()) {
-        this.log.error('[DEBUG]', String(...log));
+        this.log.error('[DEBUG]', String(...log))
       }
     }
   }
 
   async debugLog(...log: any[]): Promise<void> {
     if (await this.enablingPlatformLogging()) {
-      if (this.platformLogging === 'debug') {
-        this.log.info('[DEBUG]', String(...log));
-      } else if (this.platformLogging === 'debugMode') {
-        this.log.debug(String(...log));
+      if (this.platformLogging === 'debugMode') {
+        this.log.debug(String(...log))
+      } else if (this.platformLogging === 'debug') {
+        this.log.info('[DEBUG]', String(...log))
       }
     }
   }
 
   async loggingIsDebug(): Promise<boolean> {
-    return this.platformLogging === 'debugMode' || this.platformLogging === 'debug';
+    return this.platformLogging === 'debugMode' || this.platformLogging === 'debug'
   }
 
   async enablingPlatformLogging(): Promise<boolean> {
-    return this.platformLogging === 'debugMode' || this.platformLogging === 'debug' || this.platformLogging === 'standard';
+    return this.platformLogging === 'debugMode' || this.platformLogging === 'debug' || this.platformLogging === 'standard'
   }
 }
