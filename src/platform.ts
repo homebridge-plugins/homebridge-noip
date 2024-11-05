@@ -249,6 +249,31 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     }
   }
 
+  async getPlatformLogSettings() {
+    this.debugMode = argv.includes('-D') ?? argv.includes('--debug')
+    this.platformLogging = (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard'
+      || this.config.options?.logging === 'none')
+      ? this.config.options.logging
+      : this.debugMode ? 'debugMode' : 'standard'
+    const logging = this.config.options?.logging ? 'Platform Config' : this.debugMode ? 'debugMode' : 'Default'
+    await this.debugLog(`Using ${logging} Logging: ${this.platformLogging}`)
+  }
+
+  async getPlatformRateSettings() {
+    // RefreshRate
+    this.platformRefreshRate = this.config.options?.refreshRate ? this.config.options.refreshRate : undefined
+    const refreshRate = this.config.options?.refreshRate ? 'Using Platform Config refreshRate' : 'Platform Config refreshRate Not Set'
+    await this.debugLog(`${refreshRate}: ${this.platformRefreshRate}`)
+    // UpdateRate
+    this.platformUpdateRate = this.config.options?.updateRate ? this.config.options.updateRate : undefined
+    const updateRate = this.config.options?.updateRate ? 'Using Platform Config updateRate' : 'Platform Config updateRate Not Set'
+    await this.debugLog(`${updateRate}: ${this.platformUpdateRate}`)
+    // PushRate
+    this.platformPushRate = this.config.options?.pushRate ? this.config.options.pushRate : undefined
+    const pushRate = this.config.options?.pushRate ? 'Using Platform Config pushRate' : 'Platform Config pushRate Not Set'
+    await this.debugLog(`${pushRate}: ${this.platformPushRate}`)
+  }
+
   async getPlatformConfigSettings() {
     if (this.config.options) {
       const platformConfig: NoIPPlatformConfig = {
@@ -263,28 +288,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       }
       this.platformConfig = platformConfig
     }
-  }
-
-  async getPlatformRateSettings() {
-    this.platformRefreshRate = Math.max(this.config.options?.refreshRate ?? 1800, 1800)
-    const refreshRate = this.config.options?.refreshRate ? 'Using Platform Config refreshRate' : 'refreshRate Disabled by Default'
-    await this.debugLog(`${refreshRate}: ${this.platformRefreshRate}`)
-    this.platformUpdateRate = this.config.options?.updateRate ? this.config.options.updateRate : 1
-    const updateRate = this.config.options?.updateRate ? 'Using Platform Config updateRate' : 'Using Default updateRate'
-    await this.debugLog(`${updateRate}: ${this.platformUpdateRate}`)
-    this.platformPushRate = this.config.options?.pushRate ? this.config.options.pushRate : 1
-    const pushRate = this.config.options?.pushRate ? 'Using Platform Config pushRate' : 'Using Default pushRate'
-    await this.debugLog(`${pushRate}: ${this.platformPushRate}`)
-  }
-
-  async getPlatformLogSettings() {
-    this.debugMode = argv.includes('-D') ?? argv.includes('--debug')
-    this.platformLogging = (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard'
-      || this.config.options?.logging === 'none')
-      ? this.config.options.logging
-      : this.debugMode ? 'debugMode' : 'standard'
-    const logging = this.config.options?.logging ? 'Platform Config' : this.debugMode ? 'debugMode' : 'Default'
-    await this.debugLog(`Using ${logging} Logging: ${this.platformLogging}`)
   }
 
   /**

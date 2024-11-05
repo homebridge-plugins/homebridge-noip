@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [3.0.6](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v3.0.6) (2024-11-04)
+
+### What's Changes
+- Fix refreshRate Issue
+
+**Full Changelog**: https://github.com/homebridge-plugins/homebridge-noip/compare/v3.0.5...v3.0.6
+
 ## [3.0.5](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v3.0.5) (2024-11-03)
 
 ### What's Changes

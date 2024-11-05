@@ -27,6 +27,8 @@ export interface devicesConfig {
   password?: string
   firmware: string
   refreshRate?: number
+  updateRate?: number
+  pushRate?: number
   logging?: string
   delete?: boolean
 }
