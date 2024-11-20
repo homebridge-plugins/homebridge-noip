@@ -229,7 +229,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         method: 'GET',
       })
       const pubIp: any = await body.json()
-      this.debugWarnLog(`IP Address: ${JSON.stringify(pubIp.ip)}`)
+      this.debugWarnLog(`IPv4 Address: ${JSON.stringify(pubIp.ip)}`)
       this.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`)
       this.debugWarnLog(`Headers: ${JSON.stringify(headers)}`)
       // const pubIp = (await axios.get('https://ipinfo.io/json')).data;
@@ -237,7 +237,25 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       const IPv4 = pubIp.ip
       return IPv4
     } catch {
-      await this.errorLog('Not Able To Retreive IP Address')
+      await this.errorLog('Not Able To Retreive IPv4 Address')
+    }
+  }
+
+  async publicIPv6() {
+    try {
+      const { body, statusCode, headers } = await request('https://v6.ipinfo.io/json', {
+        method: 'GET',
+      })
+      const pubIp: any = await body.json()
+      this.debugWarnLog(`IPv6 Address: ${JSON.stringify(pubIp.ip)}`)
+      this.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`)
+      this.debugWarnLog(`Headers: ${JSON.stringify(headers)}`)
+      // const pubIp = (await axios.get('https://ipinfo.io/json')).data;
+      // await this.debugLog(JSON.stringify(pubIp));
+      const IPv6 = pubIp.ip
+      return IPv6
+    } catch {
+      await this.errorLog('Not Able To Retreive IPv6 Address')
     }
   }
 
