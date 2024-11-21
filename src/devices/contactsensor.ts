@@ -85,11 +85,12 @@ export class ContactSensor extends deviceBase {
    */
   async refreshStatus() {
     try {
+      const ip = this.device.ipv4or6 === 'ipv6' ? this.platform.publicIPv6 : this.platform.publicIPv4
       const { body, statusCode } = await request('https://dynupdate.no-ip.com/nic/update', {
         method: 'GET',
         query: {
           hostname: this.device.hostname,
-          myip: this.platform.publicIPv4 + ',' + this.platform.publicIPv6,
+          myip: ip,
         },
         headers: {
           'Authorization': `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,

@@ -45,6 +45,22 @@
                 "type": "password"
               }
             },
+            "ipv4or6": {
+              "title": "IPv4 or IPv6",
+              "type": "string",
+              "required": true,
+              "default": "ipv4",
+              "oneOf": [
+                {
+                  "title": "IPv4",
+                  "enum": ["ipv4"]
+                },
+                {
+                  "title": "IPv6",
+                  "enum": ["ipv6"]
+                }
+              ]
+            },
             "hostname": {
               "title": "Hostname",
               "type": "string"
@@ -138,6 +154,7 @@
         "devices[].hostname",
         "devices[].username",
         "devices[].password",
+        "devices[].ipv4or6",
         "devices[].firmware",
         "devices[].refreshRate",
         "devices[].logging"

@@ -25,6 +25,7 @@ export interface devicesConfig {
   hostname: string
   username?: string
   password?: string
+  ipv4or6?: string
   firmware: string
   refreshRate?: number
   updateRate?: number

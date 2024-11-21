@@ -175,7 +175,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
           ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.userDefinedDeviceName)
           : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
 
-        existingAccessory.context.serialNumber = await this.publicIPv4()
+        existingAccessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? this.publicIPv6 : this.publicIPv4
         existingAccessory.context.model = 'DUC'
         existingAccessory.context.version = await this.getVersion()
         this.api.updatePlatformAccessories([existingAccessory])
@@ -199,7 +199,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       accessory.displayName = device.configDeviceName
         ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.userDefinedDeviceName)
         : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
-      accessory.context.serialNumber = await this.publicIPv4()
+      accessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? this.publicIPv6 : this.publicIPv4
       accessory.context.model = 'DUC'
       accessory.context.version = await this.getVersion()
       // the accessory does not yet exist, so we need to create it
