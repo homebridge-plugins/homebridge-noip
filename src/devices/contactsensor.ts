@@ -3,7 +3,7 @@
  * contactsensor.ts: homebridge-noip.
  */
 
-import type { CharacteristicValue, IPv4Address, PlatformAccessory, Service } from 'homebridge'
+import type { CharacteristicValue, PlatformAccessory, Service } from 'homebridge'
 
 import type { NoIPPlatform } from '../platform.js'
 import type { devicesConfig } from '../settings.js'
@@ -23,14 +23,13 @@ import { deviceBase } from './device.js'
  */
 export class ContactSensor extends deviceBase {
   // Service
-  private contactSensor!: {
-    service: Service
+  private ContactSensor!: {
+    Service: Service
     ContactSensorState: CharacteristicValue
   }
 
   // Others
   interval: any
-  ip!: IPv4Address
 
   // Updates
   SensorUpdateInProgress!: boolean
@@ -44,13 +43,13 @@ export class ContactSensor extends deviceBase {
 
     // Contact Sensor Service
     this.debugLog('Configure Contact Sensor Service')
-    this.contactSensor = {
-      service: this.accessory.getService(this.hap.Service.ContactSensor) ?? this.accessory.addService(this.hap.Service.ContactSensor),
+    this.ContactSensor = {
+      Service: this.accessory.getService(this.hap.Service.ContactSensor) ?? this.accessory.addService(this.hap.Service.ContactSensor),
       ContactSensorState: this.hap.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED,
     }
 
     // Add Contact Sensor Service's Characteristics
-    this.contactSensor.service
+    this.ContactSensor.Service
       .setCharacteristic(this.hap.Characteristic.Name, device.hostname.split('.')[0])
 
     // this is subject we use to track when we need to POST changes to the NoIP API
@@ -73,11 +72,11 @@ export class ContactSensor extends deviceBase {
    */
   async parseStatus(response: string | string[]) {
     if (response.includes('nochg')) {
-      this.contactSensor.ContactSensorState = this.hap.Characteristic.ContactSensorState.CONTACT_DETECTED
+      this.ContactSensor.ContactSensorState = this.hap.Characteristic.ContactSensorState.CONTACT_DETECTED
     } else {
-      this.contactSensor.ContactSensorState = this.hap.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED
+      this.ContactSensor.ContactSensorState = this.hap.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED
     }
-    await this.debugLog(`ContactSensorState: ${this.contactSensor.ContactSensorState}`)
+    await this.debugLog(`ContactSensorState: ${this.ContactSensor.ContactSensorState}`)
   }
 
   /**
@@ -86,6 +85,7 @@ export class ContactSensor extends deviceBase {
   async refreshStatus() {
     try {
       const ip = this.device.ipv4or6 === 'ipv6' ? this.platform.publicIPv6 : this.platform.publicIPv4
+      const ipv4or6 = this.device.ipv4or6 === 'ipv6' ? 'IPv6' : 'IPv4'
       const { body, statusCode } = await request('https://dynupdate.no-ip.com/nic/update', {
         method: 'GET',
         query: {
@@ -99,13 +99,13 @@ export class ContactSensor extends deviceBase {
       })
       const response = await body.text()
       await this.debugWarnLog(`statusCode: ${JSON.stringify(statusCode)}`)
-      await this.debugLog(`respsonse: ${JSON.stringify(response)}`)
+      await this.debugLog(`${ipv4or6} respsonse: ${JSON.stringify(response)}`)
 
       // this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
       const data = response.trim()
       const f = data.match(/good|nochg/g)
       if (f) {
-        await this.debugLog(`Contact Sensor: ${this.accessory.displayName}, ${f[0]}`)
+        await this.debugLog(`data: ${f[0]}`)
         this.status(f, data)
       } else {
         await this.errorLog(`error: ${data}`)
@@ -113,8 +113,7 @@ export class ContactSensor extends deviceBase {
       await this.parseStatus(response)
       await this.updateHomeKitCharacteristics()
     } catch (e: any) {
-      await this.errorLog(`failed to update status, Error Message: ${JSON.stringify(e.message)}`)
-      await this.debugLog(`Contact Sensor: ${this.accessory.displayName}, Error: ${JSON.stringify(e)}`)
+      await this.errorLog(`failed to update status, Error: ${JSON.stringify(e.message ?? e)}`)
       await this.apiError(e)
     }
   }
@@ -122,16 +121,13 @@ export class ContactSensor extends deviceBase {
   async status(f: any, data: any): Promise<void> {
     switch (f[0]) {
       case 'nochg':
-        await this.debugLog(`Contact Sensor: ${this.accessory.displayName}'s IP Address has not updated, IP Address: ${data.split(' ')[1]}`)
+        await this.debugLog(`IP Address has not updated, IP Address: ${data.split(' ')[1]}`)
         break
       case 'good':
-        await this.warnLog(`Contact Sensor: ${this.accessory.displayName}'s IP Address has been updated, IP Address: ${data.split(' ')[1]}`)
+        await this.warnLog(`IP Address has been updated, IP Address: ${data.split(' ')[1]}`)
         break
       case 'nohost':
-        await this.errorLog(
-          'Hostname supplied does not exist under specified account, '
-          + 'client exit and require user to enter new login credentials before performing an additional request.',
-        )
+        await this.errorLog('Hostname supplied does not exist under specified account, client exit and require user to enter new login credentials before performing an additional request.')
         await this.timeout()
         break
       case 'badauth':
@@ -143,17 +139,11 @@ export class ContactSensor extends deviceBase {
         await this.timeout()
         break
       case '!donator':
-        await this.errorLog(
-          'An update request was sent, ' + 'including a feature that is not available to that particular user such as offline options.',
-        )
+        await this.errorLog('An update request was sent, ' + 'including a feature that is not available to that particular user such as offline options.')
         await this.timeout()
         break
       case 'abuse':
-        await this.errorLog(
-          'Username is blocked due to abuse. '
-          + 'Either for not following our update specifications or disabled due to violation of the No-IP terms of service. '
-          + 'Our terms of service can be viewed [here](https://www.noip.com/legal/tos). Client should stop sending updates.',
-        )
+        await this.errorLog('Username is blocked due to abuse. Either for not following our update specifications or disabled due to violation of the No-IP terms of service. Our terms of service can be viewed [here](https://www.noip.com/legal/tos). Client should stop sending updates.')
         await this.timeout()
         break
       case '911':
@@ -173,15 +163,11 @@ export class ContactSensor extends deviceBase {
    * Updates the status for each of the HomeKit Characteristics
    */
   async updateHomeKitCharacteristics(): Promise<void> {
-    if (this.contactSensor.ContactSensorState === undefined) {
-      await this.debugLog(`ContactSensorState: ${this.contactSensor.ContactSensorState}`)
-    } else {
-      this.contactSensor.service.updateCharacteristic(this.hap.Characteristic.ContactSensorState, this.contactSensor.ContactSensorState)
-      await this.debugLog(`updateCharacteristic ContactSensorState: ${this.contactSensor.ContactSensorState}`)
-    }
+    // ContactSensorState
+    await this.updateCharacteristic(this.ContactSensor.Service, this.hap.Characteristic.ContactSensorState, this.ContactSensor.ContactSensorState, 'ContactSensorState')
   }
 
   public async apiError(e: any): Promise<void> {
-    this.contactSensor.service.updateCharacteristic(this.hap.Characteristic.ContactSensorState, e)
+    this.ContactSensor.Service.updateCharacteristic(this.hap.Characteristic.ContactSensorState, e)
   }
 }
