@@ -6,7 +6,6 @@
 import type { CharacteristicValue, PlatformAccessory, Service } from 'homebridge'
 
 import type { NoIPPlatform } from '../platform.js'
-import type { devicesConfig } from '../settings.js'
 
 import { Buffer } from 'node:buffer'
 
@@ -14,6 +13,7 @@ import { interval, throwError } from 'rxjs'
 import { skipWhile, timeout } from 'rxjs/operators'
 import { request } from 'undici'
 
+import { type devicesConfig, noip } from '../settings.js'
 import { deviceBase } from './device.js'
 
 /**
@@ -86,8 +86,8 @@ export class ContactSensor extends deviceBase {
     try {
       const ip = this.device.ipv4or6 === 'ipv6' ? await this.platform.publicIPv6(this.device) : await this.platform.publicIPv4(this.device)
       const ipv4or6 = this.device.ipv4or6 === 'ipv6' ? 'IPv6' : 'IPv4'
-      const ipProvider = this.device.ipProvider === 'ipify' ? 'ipify.org' : 'ipinfo.io'
-      const { body, statusCode } = await request('https://dynupdate.no-ip.com/nic/update', {
+      const ipProvider = this.device.ipProvider === 'ipify' ? 'ipify.org' : this.device.ipProvider === 'getmyip' ? 'getmyip.dev' : 'ipinfo.io'
+      const { body, statusCode } = await request(noip, {
         method: 'GET',
         query: {
           hostname: this.device.hostname,
@@ -101,8 +101,6 @@ export class ContactSensor extends deviceBase {
       const response = await body.text()
       await this.debugWarnLog(`statusCode: ${JSON.stringify(statusCode)}`)
       await this.debugLog(`${ipProvider} ${ipv4or6} respsonse: ${JSON.stringify(response)}`)
-
-      // this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
       const data = response.trim()
       const f = data.match(/good|nochg/g)
       if (f) {

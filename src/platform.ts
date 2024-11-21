@@ -13,7 +13,7 @@ import { request } from 'undici'
 import validator from 'validator'
 
 import { ContactSensor } from './devices/contactsensor.js'
-import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
+import { getmyip_v4, getmyip_v6, ipify_v4, ipify_v6, ipinfo_v4, ipinfo_v6, PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
 
 /**
  * HomebridgePlatform
@@ -223,7 +223,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   async publicIPv4(device: devicesConfig) {
     try {
-      const { body, statusCode } = await request(device.ipProvider === 'ipify' ? 'https://api.ipify.org?format=json' : 'https://ipinfo.io/json', {
+      const { body, statusCode } = await request(device.ipProvider === 'ipify' ? ipify_v4 : device.ipProvider === 'getmyip' ? getmyip_v4 : ipinfo_v4, {
         method: 'GET',
       })
       const pubIp: any = await body.json()
@@ -238,7 +238,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   async publicIPv6(device: devicesConfig) {
     try {
-      const { body, statusCode } = await request(device.ipProvider === 'ipify' ? 'https://api64.ipify.org?format=json' : 'https://v6.ipinfo.io/json', {
+      const { body, statusCode } = await request(device.ipProvider === 'ipify' ? ipify_v6 : device.ipProvider === 'getmyip' ? getmyip_v6 : ipinfo_v6, {
         method: 'GET',
       })
       const pubIp: any = await body.json()

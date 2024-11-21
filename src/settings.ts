@@ -13,6 +13,15 @@ export const PLATFORM_NAME = 'NoIP'
  */
 export const PLUGIN_NAME = 'homebridge-noip'
 
+// API URLs
+export const ipinfo_v4 = 'https://ipinfo.io/json'
+export const getmyip_v4 = 'https://ipv4.getmyip.dev'
+export const ipify_v4 = 'https://api.ipify.org?format=json'
+export const ipinfo_v6 = 'https://v6.ipinfo.io/json'
+export const getmyip_v6 = 'https://ipv6.getmyip.dev'
+export const ipify_v6 = 'https://api64.ipify.org?format=json'
+export const noip = 'https://dynupdate.no-ip.com/nic/update'
+
 // Config
 export interface NoIPPlatformConfig extends PlatformConfig {
   name?: string
