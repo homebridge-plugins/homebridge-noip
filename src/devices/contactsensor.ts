@@ -84,8 +84,9 @@ export class ContactSensor extends deviceBase {
    */
   async refreshStatus() {
     try {
-      const ip = this.device.ipv4or6 === 'ipv6' ? this.platform.publicIPv6 : this.platform.publicIPv4
+      const ip = this.device.ipv4or6 === 'ipv6' ? await this.platform.publicIPv6(this.device) : await this.platform.publicIPv4(this.device)
       const ipv4or6 = this.device.ipv4or6 === 'ipv6' ? 'IPv6' : 'IPv4'
+      const ipProvider = this.device.ipProvider === 'ipify' ? 'ipify.org' : 'ipinfo.io'
       const { body, statusCode } = await request('https://dynupdate.no-ip.com/nic/update', {
         method: 'GET',
         query: {
@@ -99,7 +100,7 @@ export class ContactSensor extends deviceBase {
       })
       const response = await body.text()
       await this.debugWarnLog(`statusCode: ${JSON.stringify(statusCode)}`)
-      await this.debugLog(`${ipv4or6} respsonse: ${JSON.stringify(response)}`)
+      await this.debugLog(`${ipProvider} ${ipv4or6} respsonse: ${JSON.stringify(response)}`)
 
       // this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
       const data = response.trim()

@@ -61,6 +61,22 @@
                 }
               ]
             },
+            "ipProvider": {
+              "title": "IP Provider",
+              "type": "string",
+              "required": true,
+              "default": "default",
+              "oneOf": [
+                {
+                  "title": "ipify.org",
+                  "enum": ["ipify"]
+                },
+                {
+                  "title": "ipinfo.io",
+                  "enum": ["ipinfo"]
+                }
+              ]
+            },
             "hostname": {
               "title": "Hostname",
               "type": "string"
@@ -155,6 +171,7 @@
         "devices[].username",
         "devices[].password",
         "devices[].ipv4or6",
+        "devices[].ipProvider",
         "devices[].firmware",
         "devices[].refreshRate",
         "devices[].logging"
