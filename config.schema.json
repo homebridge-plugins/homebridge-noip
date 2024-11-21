@@ -65,19 +65,27 @@
               "title": "IP Provider",
               "type": "string",
               "required": true,
-              "default": "default",
+              "default": "ipinfo",
               "oneOf": [
                 {
                   "title": "ipify.org",
                   "enum": ["ipify"]
                 },
                 {
-                  "title": "ipinfo.io",
-                  "enum": ["ipinfo"]
-                },
-                {
                   "title": "getmyip.dev",
                   "enum": ["getmyip"]
+                },
+                {
+                  "title": "ipapi.co",
+                  "enum": ["ipapi"]
+                },
+                {
+                  "title": "my-ip.io",
+                  "enum": ["myip"]
+                },
+                {
+                  "title": "ipinfo.io",
+                  "enum": ["ipinfo"]
                 }
               ]
             },

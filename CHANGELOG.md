@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [3.1.0](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v3.1.0) (2024-11-04)
+
+### What's Changes
+- Added ipv6 support [#161](https://github.com/homebridge-plugins/homebridge-noip/pull/161), Thanks [@v0lume](https://github.com/v0lume)
+- Added support for other ip providers
+  - `ipify.org`, `ipinfo.io`, `ipapi.co`, `my-ip.io`, and `getmyip.dev`
+- Housekeeping and updated dependencies.
+
+**Full Changelog**: https://github.com/homebridge-plugins/homebridge-noip/compare/v3.0.6...v3.1.0
+
 ## [3.0.6](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v3.0.6) (2024-11-04)
 
 ### What's Changes
