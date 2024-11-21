@@ -89,7 +89,7 @@ export class ContactSensor extends deviceBase {
         method: 'GET',
         query: {
           hostname: this.device.hostname,
-          myip: this.platform.publicIPv4,
+          myip: this.platform.publicIPv4 + ',' + this.platform.publicIPv6,
         },
         headers: {
           'Authorization': `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
