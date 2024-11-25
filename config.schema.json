@@ -179,6 +179,7 @@
       "expanded": false,
       "orderable": false,
       "items": [
+        "devices[].configDeviceName",
         "devices[].hostname",
         "devices[].username",
         "devices[].password",
