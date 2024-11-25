@@ -174,7 +174,7 @@
       "key": "devices",
       "notitle": false,
       "type": "tabarray",
-      "title": "{{ value.hostname || 'New Hostname' }}",
+      "title": "{{ value.configDeviceName || value.hostname || 'New Hostname' }}",
       "expandable": true,
       "expanded": false,
       "orderable": false,
