@@ -58,7 +58,7 @@
     "lint-docs": "typedoc --emit none --treatWarningsAsErrors"
   },
   "dependencies": {
-    "@homebridge/plugin-ui-utils": "^2.0.0",
+    "@homebridge/plugin-ui-utils": "^1.0.3",
     "rxjs": "^7.8.1",
     "undici": "^6.21.0",
     "validator": "^13.12.0"

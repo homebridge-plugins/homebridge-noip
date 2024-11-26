@@ -39,8 +39,8 @@ export abstract class deviceBase {
     accessory
       .getService(this.hap.Service.AccessoryInformation)!
       .setCharacteristic(this.hap.Characteristic.Manufacturer, 'No-IP')
-      .setCharacteristic(this.hap.Characteristic.Name, device.hostname.split('.')[0])
-      .setCharacteristic(this.hap.Characteristic.ConfiguredName, device.hostname.split('.')[0])
+      .setCharacteristic(this.hap.Characteristic.Name, accessory.displayName)
+      .setCharacteristic(this.hap.Characteristic.ConfiguredName, accessory.displayName)
       .setCharacteristic(this.hap.Characteristic.Model, accessory.context.model)
       .setCharacteristic(this.hap.Characteristic.SerialNumber, accessory.context.serialNumber)
       .setCharacteristic(this.hap.Characteristic.FirmwareRevision, this.deviceFirmwareVersion)
