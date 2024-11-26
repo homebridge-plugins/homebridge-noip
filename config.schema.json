@@ -25,10 +25,7 @@
               "title": "Device Name",
               "type": "string",
               "pattern": "^[a-zA-Z0-9]+([a-zA-Z0-9 ]*[a-zA-Z0-9]+)?$",
-              "placeholder": "My Device",
-              "condition": {
-                "functionBody": "return (model.options && model.options.devices && model.options.devices[arrayIndices].hostname);"
-              }
+              "placeholder": "My Device"
             },
             "username": {
               "title": "NoIP Username/Email",
