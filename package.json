@@ -2,7 +2,7 @@
   "name": "@homebridge-plugins/homebridge-noip",
   "displayName": "No-IP",
   "type": "module",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "The No-IP plugin allows you to update your No-IP hostname(s) for your homebridge instance.",
   "author": {
     "name": "donavanbecker",
