@@ -39,3 +39,4 @@ plugin allows you update your <a href="https://noip.com">No-IP</a> hostnames fro
 ## Supported No-IP Features
 
 - IPv4 Update.
+- IPv6 Update.

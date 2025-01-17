@@ -25,10 +25,7 @@
               "title": "Device Name",
               "type": "string",
               "pattern": "^[a-zA-Z0-9]+([a-zA-Z0-9 ]*[a-zA-Z0-9]+)?$",
-              "placeholder": "My Device",
-              "condition": {
-                "functionBody": "return (model.options && model.options.devices && model.options.devices[arrayIndices].hostname);"
-              }
+              "placeholder": "My Device"
             },
             "username": {
               "title": "NoIP Username/Email",
@@ -44,6 +41,50 @@
               "x-schema-form": {
                 "type": "password"
               }
+            },
+            "ipv4or6": {
+              "title": "IPv4 or IPv6",
+              "type": "string",
+              "required": true,
+              "default": "ipv4",
+              "oneOf": [
+                {
+                  "title": "IPv4",
+                  "enum": ["ipv4"]
+                },
+                {
+                  "title": "IPv6",
+                  "enum": ["ipv6"]
+                }
+              ]
+            },
+            "ipProvider": {
+              "title": "IP Provider",
+              "type": "string",
+              "required": true,
+              "default": "ipinfo",
+              "oneOf": [
+                {
+                  "title": "ipify.org",
+                  "enum": ["ipify"]
+                },
+                {
+                  "title": "getmyip.dev",
+                  "enum": ["getmyip"]
+                },
+                {
+                  "title": "ipapi.co",
+                  "enum": ["ipapi"]
+                },
+                {
+                  "title": "my-ip.io",
+                  "enum": ["myip"]
+                },
+                {
+                  "title": "ipinfo.io",
+                  "enum": ["ipinfo"]
+                }
+              ]
             },
             "hostname": {
               "title": "Hostname",
@@ -122,6 +163,12 @@
             "enum": ["debug"]
           }
         ]
+      },
+      "allowInvalidCharacters": {
+        "title": "Allow Invalid Characters",
+        "type": "boolean",
+        "default": false,
+        "description": "Allow invalid characters in the configDeviceName. This is not recommended."
       }
     }
   },
@@ -130,14 +177,17 @@
       "key": "devices",
       "notitle": false,
       "type": "tabarray",
-      "title": "{{ value.hostname || 'New Hostname' }}",
+      "title": "{{ value.configDeviceName || value.hostname || 'New Hostname' }}",
       "expandable": true,
       "expanded": false,
       "orderable": false,
       "items": [
+        "devices[].configDeviceName",
         "devices[].hostname",
         "devices[].username",
         "devices[].password",
+        "devices[].ipv4or6",
+        "devices[].ipProvider",
         "devices[].firmware",
         "devices[].refreshRate",
         "devices[].logging"
@@ -157,7 +207,8 @@
           "key": "refreshRate",
           "notitle": true
         },
-        "logging"
+        "logging",
+        "allowInvalidCharacters"
       ]
     }
   ]
