@@ -1,4 +1,4 @@
-import type { API, HAP, Logging, PlatformAccessory } from 'homebridge'
+import type { API, CharacteristicValue, HAP, Logging, PlatformAccessory, Service } from 'homebridge'
 
 /* Copyright(C) 2021-2024, donavanbecker (https://github.com/donavanbecker). All rights reserved.
  *
@@ -39,8 +39,8 @@ export abstract class deviceBase {
     accessory
       .getService(this.hap.Service.AccessoryInformation)!
       .setCharacteristic(this.hap.Characteristic.Manufacturer, 'No-IP')
-      .setCharacteristic(this.hap.Characteristic.Name, device.hostname.split('.')[0])
-      .setCharacteristic(this.hap.Characteristic.ConfiguredName, device.hostname.split('.')[0])
+      .setCharacteristic(this.hap.Characteristic.Name, accessory.displayName)
+      .setCharacteristic(this.hap.Characteristic.ConfiguredName, accessory.displayName)
       .setCharacteristic(this.hap.Characteristic.Model, accessory.context.model)
       .setCharacteristic(this.hap.Characteristic.SerialNumber, accessory.context.serialNumber)
       .setCharacteristic(this.hap.Characteristic.FirmwareRevision, this.deviceFirmwareVersion)
@@ -123,6 +123,28 @@ export abstract class deviceBase {
       .getCharacteristic(this.hap.Characteristic.FirmwareRevision)
       .updateValue(this.deviceFirmwareVersion)
     this.debugSuccessLog(`deviceFirmwareVersion: ${this.deviceFirmwareVersion}`)
+  }
+
+  /**
+   * Update the characteristic value and log the change.
+   *
+   * @param Service Service
+   * @param Characteristic Characteristic
+   * @param CharacteristicValue CharacteristicValue | undefined
+   * @param CharacteristicName string
+   * @return: void
+   *
+   */
+  async updateCharacteristic(Service: Service, Characteristic: any, CharacteristicValue: CharacteristicValue | undefined, CharacteristicName: string): Promise<void> {
+    if (CharacteristicValue === undefined) {
+      this.debugLog(`${CharacteristicName}: ${CharacteristicValue}`)
+    } else {
+      Service.updateCharacteristic(Characteristic, CharacteristicValue)
+      this.debugLog(`updateCharacteristic ${CharacteristicName}: ${CharacteristicValue}`)
+      this.debugWarnLog(`${CharacteristicName} context before: ${this.accessory.context[CharacteristicName]}`)
+      this.accessory.context[CharacteristicName] = CharacteristicValue
+      this.debugWarnLog(`${CharacteristicName} context after: ${this.accessory.context[CharacteristicName]}`)
+    }
   }
 
   /**

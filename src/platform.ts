@@ -13,7 +13,7 @@ import { request } from 'undici'
 import validator from 'validator'
 
 import { ContactSensor } from './devices/contactsensor.js'
-import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
+import { getmyip_v4, getmyip_v6, ipapi_v4, ipapi_v6, ipify_v4, ipify_v6, ipinfo_v4, ipinfo_v6, myip_v4, myip_v6, PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
 
 /**
  * HomebridgePlatform
@@ -72,8 +72,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         await this.verifyConfig()
         await this.debugLog('Config OK')
       } catch (e: any) {
-        await this.errorLog(`Verify Config, Error Message: ${e.message}, Submit Bugs Here: https://bit.ly/homebridge-noip-bug-report`)
-        this.debugErrorLog(`Verify Config, Error: ${e}`)
+        await this.errorLog(`Verify Config, Error Message: ${e.message ?? e}, Submit Bugs Here: https://bit.ly/homebridge-noip-bug-report`)
       }
     })()
 
@@ -87,8 +86,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       try {
         await this.discoverDevices()
       } catch (e: any) {
-        await this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`)
-        this.debugErrorLog(`Failed to Discover, Error: ${e}`)
+        await this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message ?? e)}`)
       }
     })
   }
@@ -175,7 +173,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
           ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.userDefinedDeviceName)
           : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
 
-        existingAccessory.context.serialNumber = await this.publicIPv4()
+        existingAccessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
         existingAccessory.context.model = 'DUC'
         existingAccessory.context.version = await this.getVersion()
         this.api.updatePlatformAccessories([existingAccessory])
@@ -199,7 +197,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       accessory.displayName = device.configDeviceName
         ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.userDefinedDeviceName)
         : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
-      accessory.context.serialNumber = await this.publicIPv4()
+      accessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
       accessory.context.model = 'DUC'
       accessory.context.version = await this.getVersion()
       // the accessory does not yet exist, so we need to create it
@@ -223,21 +221,33 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     await this.warnLog(`Removing existing accessory from cache: ${existingAccessory.displayName}`)
   }
 
-  async publicIPv4() {
+  async publicIPv4(device: devicesConfig) {
     try {
-      const { body, statusCode, headers } = await request('https://ipinfo.io/json', {
+      const { body, statusCode } = await request(device.ipProvider === 'ipify' ? ipify_v4 : device.ipProvider === 'getmyip' ? getmyip_v4 : device.ipProvider === 'ipapi' ? ipapi_v4 : device.ipProvider === 'myip' ? myip_v4 : ipinfo_v4, {
         method: 'GET',
       })
       const pubIp: any = await body.json()
-      this.debugWarnLog(`IP Address: ${JSON.stringify(pubIp.ip)}`)
-      this.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`)
-      this.debugWarnLog(`Headers: ${JSON.stringify(headers)}`)
-      // const pubIp = (await axios.get('https://ipinfo.io/json')).data;
-      // await this.debugLog(JSON.stringify(pubIp));
+      this.debugSuccessLog(`IPv4 Address: ${JSON.stringify(pubIp.ip)}`)
+      this.debugSuccessLog(`Status Code: ${JSON.stringify(statusCode)}`)
       const IPv4 = pubIp.ip
       return IPv4
     } catch {
-      await this.errorLog('Not Able To Retreive IP Address')
+      await this.errorLog('Not Able To Retreive IPv4 Address')
+    }
+  }
+
+  async publicIPv6(device: devicesConfig) {
+    try {
+      const { body, statusCode } = await request(device.ipProvider === 'ipify' ? ipify_v6 : device.ipProvider === 'getmyip' ? getmyip_v6 : device.ipProvider === 'ipapi' ? ipapi_v6 : device.ipProvider === 'myip' ? myip_v6 : ipinfo_v6, {
+        method: 'GET',
+      })
+      const pubIp: any = await body.json()
+      this.debugSuccessLog(`IPv6 Address: ${JSON.stringify(pubIp.ip)}`)
+      this.debugSuccessLog(`Status Code: ${JSON.stringify(statusCode)}`)
+      const IPv6 = pubIp.ip
+      return IPv6
+    } catch {
+      await this.errorLog('Not Able To Retreive IPv6 Address')
     }
   }
 
