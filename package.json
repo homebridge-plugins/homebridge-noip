@@ -53,7 +53,6 @@
     "prepublishOnly": "npm run lint && npm run build && npm run plugin-ui && npm run docs && npm run docs:lint && npm run docs:theme",
     "postpublish": "npm run clean && npm ci",
     "clean": "shx rm -rf ./dist",
-    "test-coverage": "npm run test -- --coverage",
     "docs": "typedoc",
     "docs:lint": "typedoc --emit none --treatWarningsAsErrors",
     "docs:theme": "typedoc --theme default-modern"
