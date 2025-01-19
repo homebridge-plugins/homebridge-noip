@@ -172,12 +172,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         existingAccessory.context.device = device
         existingAccessory.displayName = device.configDeviceName
           ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.userDefinedDeviceName)
-          : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
-
-        // Ensure displayName is not empty
-        if (!existingAccessory.displayName) {
-          existingAccessory.displayName = 'Unnamed Accessory'
-        }
+          : hostname ? await this.validateAndCleanDisplayName(hostname, 'hostname', hostname) : 'Unnamed Accessory'
 
         existingAccessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
         existingAccessory.context.model = 'DUC'
@@ -203,12 +198,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       accessory.context.device = device
       accessory.displayName = device.configDeviceName
         ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.userDefinedDeviceName)
-        : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
-
-      // Ensure displayName is not empty
-      if (!accessory.displayName) {
-        accessory.displayName = 'Unnamed Accessory'
-      }
+        : hostname ? await this.validateAndCleanDisplayName(hostname, 'hostname', hostname) : 'Unnamed Accessory'
 
       accessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
       accessory.context.model = 'DUC'
