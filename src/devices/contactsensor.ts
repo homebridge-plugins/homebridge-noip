@@ -1,11 +1,11 @@
 /* Copyright(C) 2021-2024, donavanbecker (https://github.com/donavanbecker). All rights reserved.
  *
- * contactsensor.ts: homebridge-noip.
+ * contactsensor.ts: @homebridge-plugins/homebridge-noip.
  */
-
 import type { CharacteristicValue, PlatformAccessory, Service } from 'homebridge'
 
 import type { NoIPPlatform } from '../platform.js'
+import type { devicesConfig } from '../settings.js'
 
 import { Buffer } from 'node:buffer'
 
@@ -13,7 +13,7 @@ import { interval, throwError } from 'rxjs'
 import { skipWhile, timeout } from 'rxjs/operators'
 import { request } from 'undici'
 
-import { type devicesConfig, noip } from '../settings.js'
+import { noip } from '../settings.js'
 import { deviceBase } from './device.js'
 
 /**

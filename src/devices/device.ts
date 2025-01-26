@@ -1,9 +1,9 @@
-import type { API, CharacteristicValue, HAP, Logging, PlatformAccessory, Service } from 'homebridge'
-
 /* Copyright(C) 2021-2024, donavanbecker (https://github.com/donavanbecker). All rights reserved.
  *
- * device.ts: homebridge-noip.
+ * device.ts: @homebridge-plugins/homebridge-noip.
  */
+import type { API, CharacteristicValue, HAP, Logging, PlatformAccessory, Service } from 'homebridge'
+
 import type { NoIPPlatform } from '../platform.js'
 import type { devicesConfig, NoIPPlatformConfig } from '../settings.js'
 

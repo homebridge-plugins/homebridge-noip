@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 /* Copyright(C) 2021-2024, donavanbecker (https://github.com/donavanbecker). All rights reserved.
  *
- * server.ts: homebridge-noip.
+ * server.ts: @homebridge-plugins/homebridge-noip.
  */
 import { HomebridgePluginUiServer } from '@homebridge/plugin-ui-utils'
 
@@ -15,7 +15,7 @@ class PluginUiServer extends HomebridgePluginUiServer {
     */
     this.onRequest('getCachedAccessories', () => {
       try {
-        const plugin = 'homebridge-noip'
+        const plugin = '@homebridge-plugins/homebridge-noip'
         const devicesToReturn = []
 
         // The path and file of the cached accessories

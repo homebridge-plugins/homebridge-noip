@@ -1,7 +1,8 @@
 /* Copyright(C) 2021-2023, donavanbecker (https://github.com/donavanbecker). All rights reserved.
  *
- * index.ts: homebridge-noip.
- */import type { API } from 'homebridge'
+ * index.ts: @homebridge-plugins/homebridge-noip.
+ */
+import type { API } from 'homebridge'
 
 import { NoIPPlatform } from './platform.js'
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
