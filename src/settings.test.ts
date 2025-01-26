@@ -8,7 +8,7 @@ describe('settings', () => {
   })
 
   it('should have correct PLUGIN_NAME', () => {
-    expect(PLUGIN_NAME).toBe('homebridge-noip')
+    expect(PLUGIN_NAME).toBe('@homebridge-plugins/homebridge-noip')
   })
 
   it('should have correct API URLs', () => {
