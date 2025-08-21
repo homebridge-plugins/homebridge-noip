@@ -13,7 +13,7 @@ import { interval, throwError } from 'rxjs'
 import { skipWhile, timeout } from 'rxjs/operators'
 import { request } from 'undici'
 
-import { noip } from '../settings.js'
+import { noip, noip_renewal } from '../settings.js'
 import { deviceBase } from './device.js'
 
 /**
@@ -30,9 +30,15 @@ export class ContactSensor extends deviceBase {
 
   // Others
   interval: any
+  renewalInterval: any
 
   // Updates
   SensorUpdateInProgress!: boolean
+  RenewalInProgress!: boolean
+
+  // Renewal settings
+  autoRenewal!: boolean
+  renewalIntervalDays!: number
 
   constructor(
     readonly platform: NoIPPlatform,
@@ -54,6 +60,11 @@ export class ContactSensor extends deviceBase {
 
     // this is subject we use to track when we need to POST changes to the NoIP API
     this.SensorUpdateInProgress = false
+    this.RenewalInProgress = false
+
+    // Set up renewal settings
+    this.autoRenewal = device.autoRenewal ?? false
+    this.renewalIntervalDays = device.renewalInterval ?? 25 // Default to 25 days for free accounts
 
     // Retrieve initial values and updateHomekit
     this.refreshStatus()
@@ -65,6 +76,61 @@ export class ContactSensor extends deviceBase {
       .subscribe(async () => {
         await this.refreshStatus()
       })
+
+    // Start renewal interval if auto-renewal is enabled
+    if (this.autoRenewal) {
+      const renewalIntervalMs = this.renewalIntervalDays * 24 * 60 * 60 * 1000 // Convert days to milliseconds
+      interval(renewalIntervalMs)
+        .pipe(skipWhile(() => this.RenewalInProgress))
+        .subscribe(async () => {
+          await this.renewDomain()
+        })
+      await this.infoLog(`Auto-renewal enabled for ${device.hostname} every ${this.renewalIntervalDays} days`)
+    }
+  }
+
+  /**
+   * Renews the No-IP domain to prevent expiration
+   */
+  async renewDomain() {
+    if (this.RenewalInProgress) {
+      await this.debugLog('Renewal already in progress, skipping')
+      return
+    }
+
+    this.RenewalInProgress = true
+    
+    try {
+      await this.infoLog(`Starting domain renewal for ${this.device.hostname}`)
+      
+      const { body, statusCode } = await request(noip_renewal, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
+          'User-Agent': `Homebridge-NoIP/v${this.device.firmware}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `hostname=${encodeURIComponent(this.device.hostname)}`,
+      })
+
+      const response = await body.text()
+      await this.debugWarnLog(`Renewal statusCode: ${JSON.stringify(statusCode)}`)
+      await this.debugLog(`Renewal response: ${JSON.stringify(response)}`)
+
+      if (statusCode === 200) {
+        if (response.includes('success') || response.includes('confirmed')) {
+          await this.successLog(`Domain ${this.device.hostname} renewed successfully`)
+        } else {
+          await this.warnLog(`Domain renewal completed but response unclear: ${response}`)
+        }
+      } else {
+        await this.errorLog(`Domain renewal failed with status ${statusCode}: ${response}`)
+      }
+    } catch (e: any) {
+      await this.errorLog(`Failed to renew domain ${this.device.hostname}, Error: ${JSON.stringify(e.message ?? e)}`)
+    } finally {
+      this.RenewalInProgress = false
+    }
   }
 
   /**
