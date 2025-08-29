@@ -40,3 +40,31 @@ plugin allows you update your <a href="https://noip.com">No-IP</a> hostnames fro
 
 - IPv4 Update.
 - IPv6 Update.
+
+## Contributing
+
+This project uses GitHub Copilot to help manage contributions. Before submitting issues or requesting features, please follow these guidelines:
+
+### Issue Guidelines
+
+1. **Label Requirements**: All issues must have one semantic versioning label before assignment to Copilot:
+   - `patch`: Bug fixes (backward compatible)
+   - `minor`: New features (backward compatible) 
+   - `major`: Breaking changes
+
+2. **Branch Strategy**: All pull requests must target beta branches first:
+   - `beta-X.Y.Z` for specific version releases
+   - `beta` as a fallback if no version-specific branch exists
+   - Only after beta testing should changes be merged to `latest`
+
+3. **Automatic Branch Creation**: When issues are assigned to Copilot with proper labels, the appropriate beta branch will be automatically created if it doesn't exist.
+
+### Workflow
+
+1. Create an issue using the provided templates
+2. The issue will automatically be labeled based on the version impact you select
+3. Assign the issue to `@copilot` 
+4. Copilot will create the appropriate beta branch if needed
+5. Copilot will create a pull request targeting the beta branch
+6. After review and testing, changes will be merged to the beta branch
+7. Once ready, beta changes will be promoted to the `latest` branch for release
