@@ -1,0 +1,54 @@
+# GitHub Copilot Configuration for homebridge-noip
+# This file configures how GitHub Copilot should handle pull requests and branches
+
+# All pull requests should target beta branches first
+target_branches:
+  # Primary target should be beta branches following semver pattern
+  primary: "beta-*"
+  # Fallback to beta if no specific version branch exists
+  fallback: "beta"
+  # Only target main/latest branch after beta testing is complete
+  production: "latest"
+
+# Semantic versioning labels that must be set before assigning to Copilot
+required_labels:
+  # Bug fixes - patch version bump (4.1.2 -> 4.1.3)
+  - "patch"
+  # New features - minor version bump (4.1.2 -> 4.2.0) 
+  - "minor"
+  # Breaking changes - major version bump (4.1.2 -> 5.0.0)
+  - "major"
+
+# Instructions for Copilot
+instructions: |
+  Before working on any issue:
+  1. Ensure the issue has one of the required semantic versioning labels: patch, minor, or major
+  2. Check if a beta branch exists for the appropriate version
+  3. If no beta branch exists, create one based on the semantic version:
+     - patch: Create beta-X.Y.(Z+1) (e.g., beta-4.1.3)
+     - minor: Create beta-X.(Y+1).0 (e.g., beta-4.2.0)  
+     - major: Create beta-(X+1).0.0 (e.g., beta-5.0.0)
+  4. Target all pull requests to the appropriate beta branch
+  5. Only after beta testing and approval should changes be merged to the latest branch
+
+# Branch naming convention
+branch_naming:
+  pattern: "beta-{major}.{minor}.{patch}"
+  examples:
+    - "beta-4.1.3"  # patch release
+    - "beta-4.2.0"  # minor release  
+    - "beta-5.0.0"  # major release
+
+# Workflow integration
+workflows:
+  beta_release: ".github/workflows/beta-release.yml"
+  production_release: ".github/workflows/release.yml"
+  
+# Label requirements
+label_enforcement:
+  require_before_assignment: true
+  valid_labels:
+    - patch
+    - minor 
+    - major
+  error_message: "Issue must have one semantic versioning label (patch, minor, or major) before assignment to Copilot"

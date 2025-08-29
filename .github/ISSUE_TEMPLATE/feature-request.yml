@@ -8,6 +8,18 @@ body:
     attributes:
       value: |
         Is your feature request related to a problem? Please describe.
+  - type: dropdown
+    id: version-type
+    attributes:
+      label: Version Impact
+      description: What type of version change should this feature trigger?
+      options:
+        - minor (new functionality, backward compatible)
+        - major (breaking change)
+        - patch (bug fix, backward compatible)
+      default: 0
+    validations:
+      required: true
   - type: input
     attributes:
       label: Problem
