@@ -13,7 +13,7 @@ import { interval, throwError } from 'rxjs'
 import { skipWhile, timeout } from 'rxjs/operators'
 import { request } from 'undici'
 
-import { noip, noip_renewal } from '../settings.js'
+import { noip } from '../settings.js'
 import { deviceBase } from './device.js'
 
 /**
@@ -63,8 +63,8 @@ export class ContactSensor extends deviceBase {
     this.RenewalInProgress = false
 
     // Set up renewal settings
-    this.autoRenewal = device.autoRenewal ?? false
-    this.renewalIntervalDays = device.renewalInterval ?? 25 // Default to 25 days for free accounts
+    this.autoRenewal = device.autoRenewal ?? this.platform.platformAutoRenewal ?? false
+    this.renewalIntervalDays = device.renewalInterval ?? this.platform.platformRenewalInterval ?? 25 // Default to 25 days for free accounts
 
     // Retrieve initial values and updateHomekit
     this.refreshStatus()
@@ -85,12 +85,14 @@ export class ContactSensor extends deviceBase {
         .subscribe(async () => {
           await this.renewDomain()
         })
-      await this.infoLog(`Auto-renewal enabled for ${device.hostname} every ${this.renewalIntervalDays} days`)
+      // Log renewal setup (called asynchronously to avoid blocking constructor)
+      this.infoLog(`Auto-renewal enabled for ${device.hostname} every ${this.renewalIntervalDays} days`)
     }
   }
 
   /**
-   * Renews the No-IP domain to prevent expiration
+   * Renews the No-IP domain to prevent expiration by making an update request
+   * This works by confirming the hostname is still in use, which extends its validity period
    */
   async renewDomain() {
     if (this.RenewalInProgress) {
@@ -99,18 +101,31 @@ export class ContactSensor extends deviceBase {
     }
 
     this.RenewalInProgress = true
-    
+
     try {
       await this.infoLog(`Starting domain renewal for ${this.device.hostname}`)
       
-      const { body, statusCode } = await request(noip_renewal, {
-        method: 'POST',
+      // Get current IP to make an update request (this serves as a renewal)
+      const currentIP = this.device.ipv4or6 === 'ipv6' 
+        ? await this.platform.publicIPv6(this.device)
+        : await this.platform.publicIPv4(this.device)
+
+      if (!currentIP) {
+        await this.errorLog('Could not retrieve current IP for renewal')
+        return
+      }
+
+      const { body, statusCode } = await request(noip, {
+        method: 'GET',
         headers: {
           'Authorization': `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
           'User-Agent': `Homebridge-NoIP/v${this.device.firmware}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `hostname=${encodeURIComponent(this.device.hostname)}`,
+        // Use update endpoint with current IP to confirm hostname usage
+        query: {
+          hostname: this.device.hostname,
+          myip: currentIP,
+        },
       })
 
       const response = await body.text()
@@ -118,8 +133,10 @@ export class ContactSensor extends deviceBase {
       await this.debugLog(`Renewal response: ${JSON.stringify(response)}`)
 
       if (statusCode === 200) {
-        if (response.includes('success') || response.includes('confirmed')) {
-          await this.successLog(`Domain ${this.device.hostname} renewed successfully`)
+        if (response.includes('good') || response.includes('nochg')) {
+          await this.successLog(`Domain ${this.device.hostname} renewed successfully (IP confirmed: ${currentIP})`)
+        } else if (response.includes('nohost') || response.includes('badauth')) {
+          await this.errorLog(`Domain renewal failed - authentication or hostname error: ${response}`)
         } else {
           await this.warnLog(`Domain renewal completed but response unclear: ${response}`)
         }

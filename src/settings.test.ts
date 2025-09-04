@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getmyip_v4, getmyip_v6, ipapi_v4, ipapi_v6, ipify_v4, ipify_v6, ipinfo_v4, ipinfo_v6, myip_v4, myip_v6, noip, PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
+import { getmyip_v4, getmyip_v6, ipapi_v4, ipapi_v6, ipify_v4, ipify_v6, ipinfo_v4, ipinfo_v6, myip_v4, myip_v6, noip, noip_renewal, PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
 
 describe('settings', () => {
   it('should have correct PLATFORM_NAME', () => {
@@ -23,5 +23,6 @@ describe('settings', () => {
     expect(ipapi_v6).toBe('https://ip6api.co/json')
     expect(myip_v6).toBe('https://api6.my-ip.io/v2/ip.txt')
     expect(noip).toBe('https://dynupdate.no-ip.com/nic/update')
+    expect(noip_renewal).toBe('https://www.noip.com/api/hostname/confirm')
   })
 })
