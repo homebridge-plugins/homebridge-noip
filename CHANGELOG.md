@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [4.1.3](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.1.3) (2025-09-18)
+
+## What's Changed
+* No notable changes
+
+**Full Changelog**: https://github.com/homebridge-plugins/homebridge-noip/compare/v4.1.2...v4.1.3
+
 ## [4.1.2](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.1.2) (2025-03-04)
 
 # *No New Releases During Lent*
