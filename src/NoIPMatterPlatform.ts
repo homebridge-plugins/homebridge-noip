@@ -41,13 +41,16 @@ export class NoIPMatterPlatform extends NoIPPlatform {
 
   /**
    * Registers a single NoIP device as a Matter accessory.
-   * Falls back to HAP registration when Matter accessory creation fails.
+   * Called only when the Matter API is available; HAP fallback is handled by
+   * {@link discoverDevices} when Matter support is unavailable.
    *
    * @param device - The device configuration entry.
    * @param matterApi - The Homebridge Matter API handle.
    */
   async createMatterContactSensor(device: devicesConfig, matterApi: any): Promise<void> {
-    const uuid = matterApi.uuid.generate(device.hostname)
+    // Use the same UUID generator as the HAP path so that accessories cached
+    // by configureAccessory (which uses api.hap.uuid) are correctly matched.
+    const uuid = this.api.hap.uuid.generate(device.hostname)
     const hostname = device.hostname.split('.')[0]
 
     const existingAccessory = this.accessories.find(a => a.UUID === uuid)
@@ -66,7 +69,7 @@ export class NoIPMatterPlatform extends NoIPPlatform {
 
         existingAccessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
         existingAccessory.context.model = 'DUC'
-        existingAccessory.context.version = this.version
+        existingAccessory.context.version = await this.getVersion()
         matterApi.updatePlatformAccessories([existingAccessory])
         await this.infoLog(`Restoring existing Matter accessory from cache: ${existingAccessory.displayName}`)
         new ContactSensor(this, existingAccessory, device)
@@ -89,7 +92,7 @@ export class NoIPMatterPlatform extends NoIPPlatform {
 
       accessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
       accessory.context.model = 'DUC'
-      accessory.context.version = this.version
+      accessory.context.version = await this.getVersion()
       await this.infoLog(`Adding new Matter accessory: ${device.hostname}`)
       new ContactSensor(this, accessory, device)
       await this.debugLog(`${device.hostname} uuid: ${uuid}`)
