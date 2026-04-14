@@ -36,3 +36,24 @@ latest:
 workflow:
 - changed-files:
   - any-glob-to-any-file: .github/**
+
+# Semantic versioning labels for Copilot workflow
+# These labels determine the type of version bump and target beta branch
+
+# Add 'patch' label for bug fixes (X.Y.Z -> X.Y.Z+1)
+# Should be manually assigned to issues representing bug fixes
+patch:
+- changed-files:
+  - any-glob-to-any-file: '!**/*'  # Never auto-assigned, must be manual
+
+# Add 'minor' label for new features (X.Y.Z -> X.Y+1.0)  
+# Should be manually assigned to issues representing new features
+minor:
+- changed-files:
+  - any-glob-to-any-file: '!**/*'  # Never auto-assigned, must be manual
+
+# Add 'major' label for breaking changes (X.Y.Z -> X+1.0.0)
+# Should be manually assigned to issues representing breaking changes  
+major:
+- changed-files:
+  - any-glob-to-any-file: '!**/*'  # Never auto-assigned, must be manual
