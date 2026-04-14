@@ -1,17 +1,20 @@
-import type { API, HAP, Logging, PlatformAccessory } from 'homebridge'
+import type { API, Logging, PlatformAccessory } from 'homebridge'
+
+import type { NoIPPlatform } from '../platform.js'
+import type { devicesConfig } from '../settings.js'
+
+import { Buffer } from 'node:buffer'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ContactSensor } from './contactsensor.js'
-import type { NoIPPlatform } from '../platform.js'
-import type { devicesConfig } from '../settings.js'
 
 // Mock the request function
 vi.mock('undici', () => ({
   request: vi.fn(),
 }))
 
-describe('ContactSensor Renewal Functionality', () => {
+describe('contactSensor Renewal Functionality', () => {
   let contactSensor: ContactSensor
   let mockPlatform: NoIPPlatform
   let mockAccessory: PlatformAccessory
@@ -20,14 +23,14 @@ describe('ContactSensor Renewal Functionality', () => {
   beforeEach(async () => {
     // Reset all mocks
     vi.clearAllMocks()
-    
+
     // Mock platform
     mockPlatform = {
       api: {
         hap: {
           Service: {
-            AccessoryInformation: function() {},
-            ContactSensor: function() {},
+            AccessoryInformation() {},
+            ContactSensor() {},
           },
           Characteristic: {
             Manufacturer: {},
@@ -90,7 +93,7 @@ describe('ContactSensor Renewal Functionality', () => {
 
   it('should initialize with renewal settings enabled', () => {
     contactSensor = new ContactSensor(mockPlatform, mockAccessory, mockDevice)
-    
+
     expect(contactSensor.autoRenewal).toBe(true)
     expect(contactSensor.renewalIntervalDays).toBe(25)
     expect(contactSensor.RenewalInProgress).toBe(false)
@@ -99,7 +102,7 @@ describe('ContactSensor Renewal Functionality', () => {
   it('should initialize with renewal settings disabled', () => {
     mockDevice.autoRenewal = false
     contactSensor = new ContactSensor(mockPlatform, mockAccessory, mockDevice)
-    
+
     expect(contactSensor.autoRenewal).toBe(false)
     expect(contactSensor.renewalIntervalDays).toBe(25) // Default value
     expect(contactSensor.RenewalInProgress).toBe(false)
@@ -108,28 +111,28 @@ describe('ContactSensor Renewal Functionality', () => {
   it('should use default renewal interval when not specified', () => {
     delete mockDevice.renewalInterval
     contactSensor = new ContactSensor(mockPlatform, mockAccessory, mockDevice)
-    
+
     expect(contactSensor.renewalIntervalDays).toBe(25) // Default for free accounts
   })
 
   it.skip('should handle renewal in progress flag correctly', async () => {
     const { request } = await import('undici')
     const mockRequest = request as any
-    
+
     contactSensor = new ContactSensor(mockPlatform, mockAccessory, mockDevice)
-    
+
     // Set renewal in progress before calling renewDomain
     contactSensor.RenewalInProgress = true
-    
+
     await contactSensor.renewDomain()
-    
+
     expect(mockRequest).not.toHaveBeenCalled()
   })
 
   it('should perform domain renewal successfully', async () => {
     const { request } = await import('undici')
     const mockRequest = request as any
-    
+
     // Mock successful renewal response (similar to normal No-IP update response)
     mockRequest.mockResolvedValueOnce({
       statusCode: 200,
@@ -139,9 +142,9 @@ describe('ContactSensor Renewal Functionality', () => {
     })
 
     contactSensor = new ContactSensor(mockPlatform, mockAccessory, mockDevice)
-    
+
     await contactSensor.renewDomain()
-    
+
     expect(mockRequest).toHaveBeenCalledWith('https://dynupdate.no-ip.com/nic/update', {
       method: 'GET',
       headers: {
@@ -153,14 +156,14 @@ describe('ContactSensor Renewal Functionality', () => {
         myip: expect.any(String),
       },
     })
-    
+
     expect(contactSensor.RenewalInProgress).toBe(false)
   })
 
   it('should handle renewal failure gracefully', async () => {
     const { request } = await import('undici')
     const mockRequest = request as any
-    
+
     // Mock failed renewal response (No-IP error response)
     mockRequest.mockResolvedValueOnce({
       statusCode: 200,
@@ -170,23 +173,23 @@ describe('ContactSensor Renewal Functionality', () => {
     })
 
     contactSensor = new ContactSensor(mockPlatform, mockAccessory, mockDevice)
-    
+
     await contactSensor.renewDomain()
-    
+
     expect(contactSensor.RenewalInProgress).toBe(false)
   })
 
   it('should handle renewal network errors', async () => {
     const { request } = await import('undici')
     const mockRequest = request as any
-    
+
     // Mock network error
     mockRequest.mockRejectedValueOnce(new Error('Network error'))
 
     contactSensor = new ContactSensor(mockPlatform, mockAccessory, mockDevice)
-    
+
     await contactSensor.renewDomain()
-    
+
     expect(contactSensor.RenewalInProgress).toBe(false)
   })
 })

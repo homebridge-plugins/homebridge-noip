@@ -104,9 +104,9 @@ export class ContactSensor extends deviceBase {
 
     try {
       await this.infoLog(`Starting domain renewal for ${this.device.hostname}`)
-      
+
       // Get current IP to make an update request (this serves as a renewal)
-      const currentIP = this.device.ipv4or6 === 'ipv6' 
+      const currentIP = this.device.ipv4or6 === 'ipv6'
         ? await this.platform.publicIPv6(this.device)
         : await this.platform.publicIPv4(this.device)
 
