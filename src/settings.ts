@@ -55,4 +55,6 @@ export interface options {
   pushRate?: number
   logging?: string
   allowInvalidCharacters?: boolean
+  preferMatter?: boolean
+  enableMatter?: boolean
 }
