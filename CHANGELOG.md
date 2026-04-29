@@ -1,6 +1,12 @@
-# Changelog
+## [4.2.0](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.2.0) (2026-04-29)
 
-All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
+### What's Changed
+- Updated all dependencies to latest versions
+- Removed unused dependencies
+- Updated Homebridge and Node.js engine requirements
+- Addressed security vulnerabilities in dependencies (some may remain due to upstream issues)
+
+**Full Changelog**: https://github.com/homebridge-plugins/homebridge-noip/compare/v4.1.3...v4.2.0
 
 ## [4.1.3](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.1.3) (2025-09-18)
 

@@ -222,11 +222,17 @@
           "helpvalue": "<h5>Refresh Rate</h5><em class='primary-text'>Refresh Rate indicates the number of seconds between polls of the No-IP service.</em>"
         },
         {
-          "key": "refreshRate",
+          "key": "options.refreshRate",
           "notitle": true
         },
-        "logging",
-        "allowInvalidCharacters"
+        {
+          "key": "options.logging",
+          "notitle": true
+        },
+        {
+          "key": "options.allowInvalidCharacters",
+          "notitle": true
+        } 
       ]
     },
     {
