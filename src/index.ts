@@ -4,10 +4,13 @@
  */
 import type { API } from 'homebridge'
 
+import { NoIPMatterPlatform } from './NoIPMatterPlatform.js'
 import { NoIPPlatform } from './platform.js'
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
+import { createPlatformProxy } from './utils.js'
 
 // Register our platform with homebridge.
 export default (api: API): void => {
-  api.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, NoIPPlatform)
+  const ProxyCtor = createPlatformProxy(NoIPPlatform, NoIPMatterPlatform)
+  api.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, ProxyCtor as any)
 }

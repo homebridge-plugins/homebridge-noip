@@ -60,4 +60,6 @@ export interface options {
   allowInvalidCharacters?: boolean
   autoRenewal?: boolean
   renewalInterval?: number
+  preferMatter?: boolean
+  enableMatter?: boolean
 }

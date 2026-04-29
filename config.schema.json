@@ -197,6 +197,23 @@
         "maximum": 29,
         "default": 25,
         "description": "Number of days between automatic renewal attempts (recommended: 25 days for free accounts)"
+      "options": {
+        "title": "Matter Options",
+        "type": "object",
+        "properties": {
+          "preferMatter": {
+            "title": "Prefer Matter",
+            "type": "boolean",
+            "default": true,
+            "description": "When true and Matter is available, register accessories using the Homebridge Matter API instead of HAP."
+          },
+          "enableMatter": {
+            "title": "Enable Matter",
+            "type": "boolean",
+            "default": true,
+            "description": "Enable Homebridge Matter support (requires Homebridge v2.0 with Matter enabled)."
+          }
+        }
       }
     }
   },
@@ -234,13 +251,35 @@
           "helpvalue": "<h5>Refresh Rate</h5><em class='primary-text'>Refresh Rate indicates the number of seconds between polls of the No-IP service.</em>"
         },
         {
-          "key": "refreshRate",
+          "key": "options.refreshRate",
           "notitle": true
+        },
+        {
+          "key": "options.logging",
+          "notitle": true
+        },
+        {
+          "key": "options.allowInvalidCharacters",
+          "notitle": true
+        } 
+      ]
+    },
+    {
+      "type": "fieldset",
+      "title": "Matter Settings",
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        {
+          "type": "help",
+          "helpvalue": "<h5>Homebridge Matter Support</h5><em class='primary-text'>Enable Matter support to use the Homebridge v2.0 Matter API. Requires Homebridge v2.0 with Matter enabled.</em>"
         },
         "logging",
         "autoRenewal",
         "renewalInterval",
         "allowInvalidCharacters"
+        "options.preferMatter",
+        "options.enableMatter"
       ]
     }
   ]
