@@ -32,6 +32,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   platformRefreshRate!: options['refreshRate']
   platformPushRate!: options['pushRate']
   platformUpdateRate!: options['updateRate']
+  platformAutoRenewal!: options['autoRenewal']
+  platformRenewalInterval!: options['renewalInterval']
   debugMode!: boolean
   version!: string
 
@@ -60,6 +62,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // Plugin Configuration
     this.getPlatformLogSettings()
     this.getPlatformRateSettings()
+    this.getPlatformRenewalSettings()
     this.getPlatformConfigSettings()
     this.getVersion()
 
@@ -297,6 +300,17 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     await this.debugLog(`${pushRate}: ${this.platformPushRate}`)
   }
 
+  async getPlatformRenewalSettings() {
+    // Auto Renewal
+    this.platformAutoRenewal = this.config.options?.autoRenewal ? this.config.options.autoRenewal : undefined
+    const autoRenewal = this.config.options?.autoRenewal ? 'Using Platform Config autoRenewal' : 'Platform Config autoRenewal Not Set'
+    await this.debugLog(`${autoRenewal}: ${this.platformAutoRenewal}`)
+    // Renewal Interval
+    this.platformRenewalInterval = this.config.options?.renewalInterval ? this.config.options.renewalInterval : undefined
+    const renewalInterval = this.config.options?.renewalInterval ? 'Using Platform Config renewalInterval' : 'Platform Config renewalInterval Not Set'
+    await this.debugLog(`${renewalInterval}: ${this.platformRenewalInterval}`)
+  }
+
   async getPlatformConfigSettings() {
     if (this.config.options) {
       const platformConfig: NoIPPlatformConfig = {
@@ -306,6 +320,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       platformConfig.refreshRate = this.config.options.refreshRate ? this.config.options.refreshRate : undefined
       platformConfig.updateRate = this.config.options.updateRate ? this.config.options.updateRate : undefined
       platformConfig.pushRate = this.config.options.pushRate ? this.config.options.pushRate : undefined
+      platformConfig.autoRenewal = this.config.options.autoRenewal ? this.config.options.autoRenewal : undefined
+      platformConfig.renewalInterval = this.config.options.renewalInterval ? this.config.options.renewalInterval : undefined
       if (Object.entries(platformConfig).length !== 0) {
         await this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`)
       }

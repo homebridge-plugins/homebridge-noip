@@ -126,6 +126,20 @@
                 }
               ]
             },
+            "autoRenewal": {
+              "title": "Enable Auto Domain Renewal",
+              "type": "boolean",
+              "default": false,
+              "description": "Automatically renew the free No-IP domain to prevent expiration"
+            },
+            "renewalInterval": {
+              "title": "Renewal Interval (Days)",
+              "type": "number",
+              "minimum": 1,
+              "maximum": 29,
+              "default": 25,
+              "description": "Number of days between automatic renewal attempts (recommended: 25 days for free accounts)"
+            },
             "delete": {
               "title": "Delete Device",
               "type": "boolean"
@@ -170,6 +184,19 @@
         "default": false,
         "description": "Allow invalid characters in the configDeviceName. This is not recommended."
       },
+      "autoRenewal": {
+        "title": "Enable Auto Domain Renewal (Global)",
+        "type": "boolean",
+        "default": false,
+        "description": "Automatically renew free No-IP domains to prevent expiration (can be overridden per device)"
+      },
+      "renewalInterval": {
+        "title": "Global Renewal Interval (Days)",
+        "type": "number",
+        "minimum": 1,
+        "maximum": 29,
+        "default": 25,
+        "description": "Number of days between automatic renewal attempts (recommended: 25 days for free accounts)"
       "options": {
         "title": "Matter Options",
         "type": "object",
@@ -208,6 +235,8 @@
         "devices[].ipProvider",
         "devices[].firmware",
         "devices[].refreshRate",
+        "devices[].autoRenewal",
+        "devices[].renewalInterval",
         "devices[].logging"
       ]
     },
@@ -245,6 +274,10 @@
           "type": "help",
           "helpvalue": "<h5>Homebridge Matter Support</h5><em class='primary-text'>Enable Matter support to use the Homebridge v2.0 Matter API. Requires Homebridge v2.0 with Matter enabled.</em>"
         },
+        "logging",
+        "autoRenewal",
+        "renewalInterval",
+        "allowInvalidCharacters"
         "options.preferMatter",
         "options.enableMatter"
       ]

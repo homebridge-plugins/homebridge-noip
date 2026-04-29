@@ -26,6 +26,7 @@ export const ipify_v6 = 'https://api64.ipify.org?format=json'
 export const ipapi_v6 = 'https://ip6api.co/json'
 export const myip_v6 = 'https://api6.my-ip.io/v2/ip.txt'
 export const noip = 'https://dynupdate.no-ip.com/nic/update'
+export const noip_renewal = 'https://www.noip.com/api/hostname/confirm'
 
 // Config
 export interface NoIPPlatformConfig extends PlatformConfig {
@@ -47,6 +48,8 @@ export interface devicesConfig {
   pushRate?: number
   logging?: string
   delete?: boolean
+  autoRenewal?: boolean
+  renewalInterval?: number
 }
 
 export interface options {
@@ -55,6 +58,8 @@ export interface options {
   pushRate?: number
   logging?: string
   allowInvalidCharacters?: boolean
+  autoRenewal?: boolean
+  renewalInterval?: number
   preferMatter?: boolean
   enableMatter?: boolean
 }
