@@ -4,8 +4,8 @@
 
 # Homebridge No-IP
 
-<a href="https://www.npmjs.com/package/homebridge-noip"><img title="npm version" src="https://badgen.net/npm/v/homebridge-noip?icon=npm&label" ></a>
-<a href="https://www.npmjs.com/package/homebridge-noip"><img title="npm downloads" src="https://badgen.net/npm/dt/homebridge-noip?label=downloads" ></a>
+<a href="https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip"><img title="npm version" src="https://badgen.net/npm/v/@homebridge-plugins/homebridge-noip?icon=npm&label" ></a>
+<a href="https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip"><img title="npm downloads" src="https://badgen.net/npm/dt/@homebridge-plugins/homebridge-noip?label=downloads" ></a>
 <a href="https://discord.gg/8fpZA4S"><img title="discord-noip" src="https://badgen.net/discord/online-members/8fpZA4S?icon=discord&label=discord" ></a>
 <a href="https://paypal.me/donavanbecker"><img title="donate" src="https://badgen.net/badge/donate/paypal/yellow" ></a>
 
@@ -38,8 +38,22 @@ plugin allows you update your <a href="https://noip.com">No-IP</a> hostnames fro
 
 ## Supported No-IP Features
 
+
 - IPv4 Update.
 - IPv6 Update.
+
+## Homebridge Matter Support & HAP Fallback
+
+This plugin supports Homebridge v2.0+ with Matter API integration. When running on a Homebridge version that provides the Matter API and Matter is enabled in your config, the plugin will register devices using Matter. If Matter is unavailable or disabled, the plugin will automatically fall back to standard HAP (HomeKit Accessory Protocol) registration.
+
+**Key Points:**
+
+- **Automatic Selection:** The plugin chooses Matter or HAP at runtime based on your Homebridge environment and config options.
+- **Config Options:** You can control Matter preference and enable/disable via the plugin config (`preferMatter`, `enableMatter`).
+- **No Manual Changes Needed:** If you upgrade/downgrade Homebridge or change your config, the plugin will always select the best available platform.
+- **Tested Fallback:** The fallback logic is fully tested to ensure reliability.
+
+See the [Changelog](CHANGELOG.md) for details on Matter support and fallback improvements.
 
 ## Contributing
 
@@ -55,9 +69,7 @@ This project uses GitHub Copilot to help manage contributions. Before submitting
 2. **Branch Strategy**: All pull requests must target beta branches first:
    - `beta-X.Y.Z` for specific version releases
    - `beta` as a fallback if no version-specific branch exists
-   - Only after beta testing should changes be merged to `latest`
-
-3. **Automatic Branch Creation**: When issues are assigned to Copilot with proper labels, the appropriate beta branch will be automatically created if it doesn't exist.
+   - Only after beta testing should changes be merged to `latest` 
 
 ### Workflow
 
