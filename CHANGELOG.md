@@ -1,12 +1,22 @@
 ## [4.2.0](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.2.0) (2026-04-29)
 
 ### What's Changed
+- **Added Homebridge Matter support with automatic HAP fallback**
+  - The plugin now supports Homebridge v2.0+ Matter API integration. Devices are registered using Matter when available and enabled; otherwise, the plugin falls back to standard HAP (HomeKit Accessory Protocol) registration.
+  - Platform selection is automatic and configurable via `preferMatter` and `enableMatter` options.
 - Updated all dependencies to latest versions
 - Removed unused dependencies
 - Updated Homebridge and Node.js engine requirements
 - Addressed security vulnerabilities in dependencies (some may remain due to upstream issues)
 
-**Full Changelog**: https://github.com/homebridge-plugins/homebridge-noip/compare/v4.1.3...v4.2.0
+**Full Changelog**: https://github.com/homebridge-plugins/homebridge-noip/compare/v4.1.4...v4.2.0
+
+## [4.1.4](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.1.4) (2026-04-29)
+
+## What's Changed
+* No notable changes
+
+**Full Changelog**: https://github.com/homebridge-plugins/homebridge-noip/compare/v4.1.3...v4.1.4
 
 ## [4.1.3](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.1.3) (2025-09-18)
 
