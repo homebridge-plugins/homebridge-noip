@@ -197,6 +197,7 @@
         "maximum": 29,
         "default": 25,
         "description": "Number of days between automatic renewal attempts (recommended: 25 days for free accounts)"
+      },
       "options": {
         "title": "Matter Options",
         "type": "object",
@@ -274,10 +275,10 @@
           "type": "help",
           "helpvalue": "<h5>Homebridge Matter Support</h5><em class='primary-text'>Enable Matter support to use the Homebridge v2.0 Matter API. Requires Homebridge v2.0 with Matter enabled.</em>"
         },
-        "logging",
-        "autoRenewal",
-        "renewalInterval",
-        "allowInvalidCharacters"
+        "options.logging",
+        "options.autoRenewal",
+        "options.renewalInterval",
+        "options.allowInvalidCharacters",
         "options.preferMatter",
         "options.enableMatter"
       ]
