@@ -72,7 +72,7 @@ export class NoIPMatterPlatform extends NoIPPlatform {
         existingAccessory.context.version = await this.getVersion()
         matterApi.updatePlatformAccessories([existingAccessory])
         await this.infoLog(`Restoring existing Matter accessory from cache: ${existingAccessory.displayName}`)
-        new ContactSensor(this, existingAccessory, device)
+        existingAccessory.control = new ContactSensor(this, existingAccessory, device)
       } else {
         matterApi.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory])
         await this.warnLog(`Removing existing Matter accessory from cache: ${existingAccessory.displayName}`)
@@ -94,7 +94,7 @@ export class NoIPMatterPlatform extends NoIPPlatform {
       accessory.context.model = 'DUC'
       accessory.context.version = await this.getVersion()
       await this.infoLog(`Adding new Matter accessory: ${device.hostname}`)
-      new ContactSensor(this, accessory, device)
+      accessory.control = new ContactSensor(this, accessory, device)
       await this.debugLog(`${device.hostname} uuid: ${uuid}`)
 
       matterApi.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory])

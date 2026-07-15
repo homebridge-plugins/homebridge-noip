@@ -190,7 +190,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         await this.infoLog(`Restoring existing accessory from cache: ${existingAccessory.displayName}`)
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
-        new ContactSensor(this, existingAccessory, device)
+        existingAccessory.control = new ContactSensor(this, existingAccessory, device)
         await this.debugLog(`uuid: ${device.hostname}`)
       } else {
         this.unregisterPlatformAccessories(existingAccessory)
@@ -220,7 +220,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       await this.infoLog(`Adding new accessory: ${device.hostname}`)
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
-      new ContactSensor(this, accessory, device)
+      accessory.control = new ContactSensor(this, accessory, device)
       await this.debugLog(`${device.hostname} uuid: ${device.hostname}`)
 
       // link the accessory to your platform
