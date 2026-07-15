@@ -3,6 +3,7 @@
 ### Changed
 
 - chore(deps): update dependencies
+- chore: add .idea to .gitignore
 
 ## [4.2.0](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.2.0) (2026-04-29)
 
