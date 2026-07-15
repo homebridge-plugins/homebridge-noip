@@ -1,3 +1,9 @@
+## v4.2.2 (Pending Release)
+
+### Changed
+
+- chore(github): update the setup-node action to v7
+
 ## v4.2.1 (2026-07-15)
 
 ### Changed
