@@ -16,6 +16,20 @@ import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
  */
 export class NoIPMatterPlatform extends NoIPPlatform {
   /**
+   * Matter's BridgedDeviceBasicInformation.NodeLabel is constrained to 32 characters.
+   * Homebridge sets the nodeLabel from the accessory displayName, so longer names make
+   * the whole endpoint fail to register with "Behaviors have errors".
+   */
+  private clampMatterDisplayName(displayName: string): string {
+    if (displayName.length <= 32) {
+      return displayName
+    }
+    const clamped = displayName.slice(0, 32).trim()
+    this.debugLog(`Display name "${displayName}" exceeds Matter's 32 character limit, using "${clamped}"`)
+    return clamped
+  }
+
+  /**
    * Discovers devices and registers them.
    * Uses the Matter API when available, otherwise delegates to the HAP path
    * supplied by the parent class.
@@ -59,9 +73,9 @@ export class NoIPMatterPlatform extends NoIPPlatform {
       if (!device.delete) {
         existingAccessory.context = existingAccessory.context || {}
         existingAccessory.context.device = device
-        existingAccessory.displayName = device.configDeviceName
+        existingAccessory.displayName = this.clampMatterDisplayName(device.configDeviceName
           ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.configDeviceName)
-          : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
+          : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname))
 
         if (!existingAccessory.displayName) {
           existingAccessory.displayName = 'Unnamed Accessory'
@@ -82,9 +96,9 @@ export class NoIPMatterPlatform extends NoIPPlatform {
 
       accessory.context = accessory.context || {}
       accessory.context.device = device
-      accessory.displayName = device.configDeviceName
+      accessory.displayName = this.clampMatterDisplayName(device.configDeviceName
         ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.configDeviceName)
-        : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)
+        : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname))
 
       if (!accessory.displayName) {
         accessory.displayName = 'Unnamed Accessory'
