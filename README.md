@@ -4,10 +4,10 @@
 
 # Homebridge No-IP
 
-<a href="https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip"><img title="npm version" src="https://badgen.net/npm/v/@homebridge-plugins/homebridge-noip?icon=npm&label" ></a>
-<a href="https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip"><img title="npm downloads" src="https://badgen.net/npm/dt/@homebridge-plugins/homebridge-noip?label=downloads" ></a>
-<a href="https://discord.gg/8fpZA4S"><img title="discord-noip" src="https://badgen.net/discord/online-members/8fpZA4S?icon=discord&label=discord" ></a>
-<a href="https://paypal.me/donavanbecker"><img title="donate" src="https://badgen.net/badge/donate/paypal/yellow" ></a>
+<a href="https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip"><img alt="badge" title="npm version" src="https://badgen.net/npm/v/@homebridge-plugins/homebridge-noip?icon=npm&label" ></a>
+<a href="https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip"><img alt="badge" title="npm downloads" src="https://badgen.net/npm/dt/@homebridge-plugins/homebridge-noip?label=downloads" ></a>
+<a href="https://discord.gg/8fpZA4S"><img alt="badge" title="discord-noip" src="https://badgen.net/discord/online-members/8fpZA4S?icon=discord&label=discord" ></a>
+<a href="https://paypal.me/donavanbecker"><img alt="badge" title="donate" src="https://badgen.net/badge/donate/paypal/yellow" ></a>
 
 <p>The Homebridge <a href="https://noip.com">No-IP</a> 
 plugin allows you update your <a href="https://noip.com">No-IP</a> hostnames from the IP that your 
@@ -28,7 +28,7 @@ plugin allows you update your <a href="https://noip.com">No-IP</a> hostnames fro
 
 <p align="center">
 
-<img src="https://user-images.githubusercontent.com/9875439/133934622-05a9c19e-c5ba-46ee-b0db-0748420813d7.png" width="450px">
+<img alt="No-IP account setup" src="https://user-images.githubusercontent.com/9875439/133934622-05a9c19e-c5ba-46ee-b0db-0748420813d7.png" width="450px">
 
 </p>
 
