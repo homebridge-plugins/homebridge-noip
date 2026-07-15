@@ -1,3 +1,9 @@
+## v4.1.5 (Pending Release)
+
+### Changed
+
+- chore(deps): update dependencies
+
 ## [4.2.0](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.2.0) (2026-04-29)
 
 ### What's Changed
