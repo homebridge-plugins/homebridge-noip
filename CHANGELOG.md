@@ -1,9 +1,20 @@
-## v4.1.5 (Pending Release)
+## v4.2.1 (Pending Release)
 
 ### Changed
 
 - chore(deps): update dependencies
 - chore: add .idea to .gitignore
+- chore(github): align workflows, funding and issue templates with the other org plugins
+- chore: align npm publishing files with the other org plugins
+- chore: standardise the eslint setup with the other org plugins
+- refactor: store device instances on their accessories like the other org plugins
+- style: apply the standardised lint rules
+- chore: standardise the package scripts and publishing config
+- chore: update the plugin metadata for the new maintainer
+- chore: sync the package version with the released v4.2.0
+- docs: refresh the readme
+- docs: add claude and copilot instructions files
+- docs: use the standard org readme banner
 
 ## [4.2.0](https://github.com/homebridge-plugins/homebridge-noip/releases/tag/v4.2.0) (2026-04-29)
 

@@ -1,82 +1,54 @@
+<p align="center">
+   <a href="https://github.com/homebridge-plugins/homebridge-noip"><img alt="homebridge-noip" src="https://raw.githubusercontent.com/homebridge-plugins/homebridge-noip/latest/branding/Homebridge_x_No-IP.png" width="600px"></a>
+</p>
 <span align="center">
 
-<a href="https://github.com/homebridge/verified/blob/master/verified-plugins.json"><img alt="homebridge-verified" src="https://raw.githubusercontent.com/homebridge-plugins/homebridge-noip/latest/branding/Homebridge_x_No-IP.svg?sanitize=true" width="350px"></a>
+## homebridge-noip
 
-# Homebridge No-IP
+Homebridge plugin to keep your No-IP hostnames updated with your current IP address
 
-<a href="https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip"><img alt="badge" title="npm version" src="https://badgen.net/npm/v/@homebridge-plugins/homebridge-noip?icon=npm&label" ></a>
-<a href="https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip"><img alt="badge" title="npm downloads" src="https://badgen.net/npm/dt/@homebridge-plugins/homebridge-noip?label=downloads" ></a>
-<a href="https://discord.gg/8fpZA4S"><img alt="badge" title="discord-noip" src="https://badgen.net/discord/online-members/8fpZA4S?icon=discord&label=discord" ></a>
-<a href="https://paypal.me/donavanbecker"><img alt="badge" title="donate" src="https://badgen.net/badge/donate/paypal/yellow" ></a>
-
-<p>The Homebridge <a href="https://noip.com">No-IP</a> 
-plugin allows you update your <a href="https://noip.com">No-IP</a> hostnames from the IP that your 
-  <a href="https://homebridge.io">Homebridge</a> instance is on. 
-</p>
+[![npm](https://img.shields.io/npm/v/@homebridge-plugins/homebridge-noip/latest?label=latest)](https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip)
+[![npm](https://img.shields.io/npm/v/@homebridge-plugins/homebridge-noip/beta?label=beta)](https://github.com/homebridge/homebridge/wiki/How-to-Install-Alternate-Plugin-Versions)<br>
+[![verified-by-homebridge](https://img.shields.io/badge/homebridge-verified-blueviolet?color=%23491F59&style=flat)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)<br>
+[![npm](https://img.shields.io/npm/dt/@homebridge-plugins/homebridge-noip)](https://www.npmjs.com/package/@homebridge-plugins/homebridge-noip)
+[![Discord](https://img.shields.io/discord/432663330281226270?color=728ED5&logo=discord&label=hb-discord)](https://discord.gg/bHjKNkN)
 
 </span>
 
-## Installation
+### Plugin Information
 
-1. Search for "No-IP" on the plugin screen of [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x).
-2. Click **Install**.
+- This plugin keeps your [No-IP](https://noip.com) hostnames updated with the IP address of the machine your Homebridge instance runs on. The plugin:
+  - requires your No-IP account credentials and hostname to work
+  - supports both IPv4 and IPv6 updates
+  - creates a HomeKit contact sensor that shows whether your hostname is in sync
 
-## Configuration
+### Setup
 
-1. Login / create an account at https://noip.com/
-   - If you haven't already you can also create your No-IP hostname here as well.
+- Installation
+  - Search for "No-IP" on the plugin screen of the [Homebridge UI](https://github.com/homebridge/homebridge-config-ui-x) and click **Install**.
+- Configuration
+  1. Login or create an account at [noip.com](https://noip.com), and create your hostname there if you haven't already.
+  2. Enter your No-IP username, password and hostname in the plugin settings.
+  3. Click **Save** and restart Homebridge.
 
-<p align="center">
+### Features
 
-<img alt="No-IP account setup" src="https://user-images.githubusercontent.com/9875439/133934622-05a9c19e-c5ba-46ee-b0db-0748420813d7.png" width="450px">
+- **Matter** support is available when running Homebridge v2.0+ with Matter enabled:
+  - The plugin chooses Matter or HAP automatically at runtime based on your Homebridge environment and the `enableMatter`/`preferMatter` config options.
+  - If Matter is unavailable or disabled, the plugin falls back to standard HAP registration automatically.
 
-</p>
+### Help/About
 
-2. Type in your NoIP Username, Password, and Hostname into the Plugin Setting UI
-3. Click Save
-4. Restart Homebridge
+- [Support Request](https://github.com/homebridge-plugins/homebridge-noip/issues/new/choose)
+- [Changelog](https://github.com/homebridge-plugins/homebridge-noip/blob/latest/CHANGELOG.md)
+- [About Me](https://github.com/sponsors/bwp91)
 
-## Supported No-IP Features
+### Credits
 
+- To [@donavanbecker](https://github.com/donavanbecker): the original creator and maintainer of this plugin.
+- To the creators/contributors of [Homebridge](https://homebridge.io) who make this plugin possible.
 
-- IPv4 Update.
-- IPv6 Update.
+### Disclaimer
 
-## Homebridge Matter Support & HAP Fallback
-
-This plugin supports Homebridge v2.0+ with Matter API integration. When running on a Homebridge version that provides the Matter API and Matter is enabled in your config, the plugin will register devices using Matter. If Matter is unavailable or disabled, the plugin will automatically fall back to standard HAP (HomeKit Accessory Protocol) registration.
-
-**Key Points:**
-
-- **Automatic Selection:** The plugin chooses Matter or HAP at runtime based on your Homebridge environment and config options.
-- **Config Options:** You can control Matter preference and enable/disable via the plugin config (`preferMatter`, `enableMatter`).
-- **No Manual Changes Needed:** If you upgrade/downgrade Homebridge or change your config, the plugin will always select the best available platform.
-- **Tested Fallback:** The fallback logic is fully tested to ensure reliability.
-
-See the [Changelog](CHANGELOG.md) for details on Matter support and fallback improvements.
-
-## Contributing
-
-This project uses GitHub Copilot to help manage contributions. Before submitting issues or requesting features, please follow these guidelines:
-
-### Issue Guidelines
-
-1. **Label Requirements**: All issues must have one semantic versioning label before assignment to Copilot:
-   - `patch`: Bug fixes (backward compatible)
-   - `minor`: New features (backward compatible) 
-   - `major`: Breaking changes
-
-2. **Branch Strategy**: All pull requests must target beta branches first:
-   - `beta-X.Y.Z` for specific version releases
-   - `beta` as a fallback if no version-specific branch exists
-   - Only after beta testing should changes be merged to `latest` 
-
-### Workflow
-
-1. Create an issue using the provided templates
-2. The issue will automatically be labeled based on the version impact you select
-3. Assign the issue to `@copilot` 
-4. Copilot will create the appropriate beta branch if needed
-5. Copilot will create a pull request targeting the beta branch
-6. After review and testing, changes will be merged to the beta branch
-7. Once ready, beta changes will be promoted to the `latest` branch for release
+- I am in no way affiliated with No-IP and this plugin is a personal project that I maintain in my free time.
+- Use this plugin entirely at your own risk - please see licence for more information.
