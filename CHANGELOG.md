@@ -3,6 +3,7 @@
 ### Changed
 
 - chore(github): update the setup-node action to v7
+- chore(deps): dependency updates
 
 ## v4.2.1 (2026-07-15)
 
