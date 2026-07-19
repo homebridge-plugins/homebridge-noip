@@ -22,14 +22,18 @@ Homebridge plugin to keep your No-IP hostnames updated with your current IP addr
   - supports both IPv4 and IPv6 updates
   - creates a HomeKit contact sensor that shows whether your hostname is in sync
 
+### Prerequisites
+
+- To use this plugin, you will need to already have:
+  - [Node](https://nodejs.org): latest version of `v22` or `v24` - any other major version is not supported.
+  - [Homebridge](https://homebridge.io): `v2` - refer to link for more information and installation instructions.
+
 ### Setup
 
-- Installation
-  - Search for "No-IP" on the plugin screen of the [Homebridge UI](https://github.com/homebridge/homebridge-config-ui-x) and click **Install**.
-- Configuration
-  1. Login or create an account at [noip.com](https://noip.com), and create your hostname there if you haven't already.
-  2. Enter your No-IP username, password and hostname in the plugin settings.
-  3. Click **Save** and restart Homebridge.
+- [Installation](https://github.com/homebridge-plugins/homebridge-noip/wiki/Installation)
+- [Configuration](https://github.com/homebridge-plugins/homebridge-noip/wiki/Configuration)
+- [Beta Version](https://github.com/homebridge-plugins/homebridge-noip/wiki/Beta-Version)
+- [Node Version](https://github.com/homebridge-plugins/homebridge-noip/wiki/Node-Version)
 
 ### Features
 
@@ -39,6 +43,7 @@ Homebridge plugin to keep your No-IP hostnames updated with your current IP addr
 
 ### Help/About
 
+- [Common Errors](https://github.com/homebridge-plugins/homebridge-noip/wiki/Common-Errors)
 - [Support Request](https://github.com/homebridge-plugins/homebridge-noip/issues/new/choose)
 - [Changelog](https://github.com/homebridge-plugins/homebridge-noip/blob/latest/CHANGELOG.md)
 - [About Me](https://github.com/sponsors/bwp91)
