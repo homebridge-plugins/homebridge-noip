@@ -8,18 +8,19 @@
   "footerDisplay": "Your No-IP account has been linked. Please raise any issues on our [project page](https://github.com/homebridge-plugins/homebridge-noip/issues).\n\nIf you would like to have other features, please open a [feature request](https://github.com/homebridge-plugins/homebridge-noip/issues/new/choose).",
   "schema": {
     "type": "object",
+    "required": ["name", "logging"],
     "properties": {
       "name": {
         "type": "string",
         "title": "Name",
-        "default": "NoIP",
-        "required": true
+        "default": "NoIP"
       },
       "devices": {
         "type": "array",
         "items": {
           "title": "Devices",
           "type": "object",
+          "required": ["username", "ipv4or6", "ipProvider", "logging"],
           "properties": {
             "configDeviceName": {
               "title": "Device Name",
@@ -30,7 +31,6 @@
             "username": {
               "title": "NoIP Username/Email",
               "type": "string",
-              "required": true,
               "x-schema-form": {
                 "type": "email"
               }
@@ -45,7 +45,6 @@
             "ipv4or6": {
               "title": "IPv4 or IPv6",
               "type": "string",
-              "required": true,
               "default": "ipv4",
               "oneOf": [
                 {
@@ -61,7 +60,6 @@
             "ipProvider": {
               "title": "IP Provider",
               "type": "string",
-              "required": true,
               "default": "ipinfo",
               "oneOf": [
                 {
@@ -106,7 +104,6 @@
               "title": "Device Logging Level Override",
               "description": "Overrides the plugin logging level for this device only. None turns off all messages from this plugin. Standard shows normal activity, warnings and errors. Debug adds detailed messages, and is what to use when reporting a problem. Default behaves the same as Standard.",
               "type": "string",
-              "required": true,
               "default": "",
               "oneOf": [
                 {
@@ -159,7 +156,6 @@
         "title": "Plugin Logging Level",
         "description": "None turns off all messages from this plugin. Standard shows normal activity, warnings and errors. Debug adds detailed messages, and is what to use when reporting a problem. Default behaves the same as Standard.",
         "type": "string",
-        "required": true,
         "default": "",
         "oneOf": [
           {

@@ -3,6 +3,7 @@
 ### Changed
 
 - style(ui): standardise the custom ui layout and sync the support tab with the readme
+- fix(schema): declare required fields the standard way so the homebridge ui stops reporting a config validation failure
 
 ## v4.2.3 (2026-07-20)
 
