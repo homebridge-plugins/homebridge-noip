@@ -1,10 +1,16 @@
-## v4.2.4 (Pending Release)
+## v4.2.4 (2026-07-28)
 
 ### Changed
 
+- chore(github): allow the codeql scan to be started manually
+- Bump undici from 8.7.0 to 8.8.0 (#186)
+- chore(github): stop concurrent release runs racing for the same version
+- chore: add the supports-matter keyword
+- chore(github): use the shared homebridge action to deprecate past pre-releases
 - style(ui): standardise the custom ui layout and sync the support tab with the readme
 - fix(schema): declare required fields the standard way so the homebridge ui stops reporting a config validation failure
 - chore: declare the supports-hap transport keyword for the homebridge ui
+- chore(deps): dependency updates
 
 ## v4.2.3 (2026-07-20)
 
