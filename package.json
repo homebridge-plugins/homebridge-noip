@@ -74,9 +74,9 @@
     "vitest": "^4.1.10"
   },
   "allowScripts": {
-    "fsevents@2.3.3": true,
-    "@homebridge/node-pty-prebuilt-multiarch@0.13.1": true,
-    "macos-temperature-sensor@1.0.4": true,
-    "osx-temperature-sensor@1.0.8": true
+    "fsevents": true,
+    "@homebridge/node-pty-prebuilt-multiarch": true,
+    "macos-temperature-sensor": true,
+    "osx-temperature-sensor": true
   }
 }
