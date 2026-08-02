@@ -46,7 +46,6 @@ Homebridge plugin to keep your No-IP hostnames updated with your current IP addr
 - [Common Errors](https://github.com/homebridge-plugins/homebridge-noip/wiki/Common-Errors)
 - [Support Request](https://github.com/homebridge-plugins/homebridge-noip/issues/new/choose)
 - [Changelog](https://github.com/homebridge-plugins/homebridge-noip/blob/latest/CHANGELOG.md)
-- [About Me](https://github.com/sponsors/bwp91)
 
 ### Credits
 

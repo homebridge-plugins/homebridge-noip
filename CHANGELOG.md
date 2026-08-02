@@ -8,6 +8,7 @@
 - chore: add a changelog:sync script to populate the pending section from the commits
 - chore: count a repeated commit subject once when syncing the changelog
 - chore(github): check the changelog against the commits in ci
+- chore: restore the original author and remove personal funding links
 
 ## v4.2.4 (2026-07-28)
 

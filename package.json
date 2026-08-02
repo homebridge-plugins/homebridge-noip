@@ -5,8 +5,8 @@
   "version": "4.2.4",
   "description": "The No-IP plugin allows you to update your No-IP hostname(s) for your homebridge instance.",
   "author": {
-    "name": "bwp91",
-    "email": "bwp91@icloud.com"
+    "name": "donavanbecker",
+    "url": "https://github.com/donavanbecker"
   },
   "contributors": [
     {
@@ -21,20 +21,6 @@
     "donavanbecker"
   ],
   "license": "ISC",
-  "funding": [
-    {
-      "type": "github",
-      "url": "https://github.com/sponsors/bwp91"
-    },
-    {
-      "type": "kofi",
-      "url": "https://ko-fi.com/bwp91"
-    },
-    {
-      "type": "paypal",
-      "url": "https://www.paypal.me/BenPotter"
-    }
-  ],
   "homepage": "https://github.com/homebridge-plugins/homebridge-noip",
   "repository": {
     "type": "git",
