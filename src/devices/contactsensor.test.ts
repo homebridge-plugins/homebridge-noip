@@ -55,7 +55,6 @@ describe('contactSensor Renewal Functionality', () => {
       config: {
         devices: [],
       },
-      debugMode: false,
       platformLogging: 'standard',
       platformAutoRenewal: false,
       platformRenewalInterval: 25,
