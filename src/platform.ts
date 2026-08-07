@@ -344,10 +344,15 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
    *
    * @returns {Promise<void>} A promise that resolves when the version has been retrieved and logged.
    */
-  async getVersion(): Promise<void> {
+  async getVersion(): Promise<string> {
+    // This returned nothing, so every caller that awaited it as a value got
+    // undefined - which is how "Homebridge-NoIP/vundefined" ended up in the
+    // User-Agent sent to No-IP, and why the Matter accessory published no
+    // firmware revision.
     const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'))
     this.debugLog(`Plugin Version: ${version}`)
     this.version = version
+    return version
   }
 
   /**

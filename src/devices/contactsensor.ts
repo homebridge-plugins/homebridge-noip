@@ -119,7 +119,7 @@ export class ContactSensor extends deviceBase {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
-          'User-Agent': `Homebridge-NoIP/v${this.device.firmware}`,
+          'User-Agent': `Homebridge-NoIP/v${this.deviceFirmwareVersion}`,
         },
         // Use update endpoint with current IP to confirm hostname usage
         query: {
@@ -178,7 +178,7 @@ export class ContactSensor extends deviceBase {
         },
         headers: {
           'Authorization': `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
-          'User-Agent': `Homebridge-NoIP/v${this.device.firmware}`,
+          'User-Agent': `Homebridge-NoIP/v${this.deviceFirmwareVersion}`,
         },
       })
       const response = await body.text()
