@@ -17,6 +17,7 @@
 - fix: send a real version in the user agent, rather than the word undefined
 - fix: use the right my-ip.io address for ipv6, so the lookup can work
 - fix: stop two refreshes running at once, so no-ip never gets duplicate updates
+- fix: report a successful ip update as a success, not a warning
 
 ## v4.2.4 (2026-07-28)
 

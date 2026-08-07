@@ -216,7 +216,10 @@ export class ContactSensor extends deviceBase {
         await this.debugLog(`IP Address has not updated, IP Address: ${data.split(' ')[1]}`)
         break
       case 'good':
-        await this.warnLog(`IP Address has been updated, IP Address: ${data.split(' ')[1]}`)
+        // This is the plugin doing its job, not a problem. At warn level it was
+        // the only visible line the plugin ever printed in normal use, so owners
+        // learnt to ignore its warnings.
+        await this.successLog(`IP Address has been updated, IP Address: ${data.split(' ')[1]}`)
         break
       case 'nohost':
         await this.errorLog('Hostname supplied does not exist under specified account, client exit and require user to enter new login credentials before performing an additional request.')
