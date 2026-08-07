@@ -24,7 +24,10 @@ export const ipinfo_v6 = 'https://v6.ipinfo.io/json'
 export const getmyip_v6 = 'https://ipv6.getmyip.dev'
 export const ipify_v6 = 'https://api64.ipify.org?format=json'
 export const ipapi_v6 = 'https://ip6api.co/json'
-export const myip_v6 = 'https://api6.my-ip.io/v2/ip.txt'
+// The .json variant, matching its IPv4 twin above and what publicIPv6() parses.
+// This pointed at the plain-text .txt endpoint, so body.json() always threw and
+// the address could never be retrieved with this provider.
+export const myip_v6 = 'https://api6.my-ip.io/v2/ip.json'
 export const noip = 'https://dynupdate.no-ip.com/nic/update'
 export const noip_renewal = 'https://www.noip.com/api/hostname/confirm'
 

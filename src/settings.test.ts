@@ -21,7 +21,7 @@ describe('settings', () => {
     expect(getmyip_v6).toBe('https://ipv6.getmyip.dev')
     expect(ipify_v6).toBe('https://api64.ipify.org?format=json')
     expect(ipapi_v6).toBe('https://ip6api.co/json')
-    expect(myip_v6).toBe('https://api6.my-ip.io/v2/ip.txt')
+    expect(myip_v6).toBe('https://api6.my-ip.io/v2/ip.json')
     expect(noip).toBe('https://dynupdate.no-ip.com/nic/update')
     expect(noip_renewal).toBe('https://www.noip.com/api/hostname/confirm')
   })
