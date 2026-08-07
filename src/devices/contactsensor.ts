@@ -70,9 +70,12 @@ export class ContactSensor extends deviceBase {
     this.refreshStatus()
     this.updateHomeKitCharacteristics()
 
-    // Start an update interval
+    // Start an update interval. The overlap guard is checked inside refreshStatus
+    // now: it used to be a `skipWhile`, which stops testing its predicate for good
+    // after the first false, and nothing ever raised the flag anyway - so a stalled
+    // request could be joined by a second one, sending two updates for the same
+    // hostname, which is the pattern No-IP's terms treat as abusive.
     interval(this.deviceRefreshRate * 1000)
-      .pipe(skipWhile(() => this.SensorUpdateInProgress))
       .subscribe(async () => {
         await this.refreshStatus()
       })
@@ -166,6 +169,11 @@ export class ContactSensor extends deviceBase {
    * Asks the NoIP API for the latest device information
    */
   async refreshStatus() {
+    if (this.SensorUpdateInProgress) {
+      await this.debugLog('Skipping this refresh, the previous one has not finished')
+      return
+    }
+    this.SensorUpdateInProgress = true
     try {
       const ip = this.device.ipv4or6 === 'ipv6' ? await this.platform.publicIPv6(this.device) : await this.platform.publicIPv4(this.device)
       const ipv4or6 = this.device.ipv4or6 === 'ipv6' ? 'IPv6' : 'IPv4'
@@ -197,6 +205,8 @@ export class ContactSensor extends deviceBase {
     } catch (e: any) {
       await this.errorLog(`failed to update status, Error: ${JSON.stringify(e.message ?? e)}`)
       await this.apiError(e)
+    } finally {
+      this.SensorUpdateInProgress = false
     }
   }
 
