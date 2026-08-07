@@ -13,6 +13,7 @@
 - chore: allow dependency install scripts by package name rather than pinned version, so a version bump cannot silently block a native build
 - chore: exclude test files and the test config from the published package
 - fix: restore debug logging when the plugin runs in a child bridge
+- fix: put the plugin settings where the code reads them, so auto renewal actually runs
 
 ## v4.2.4 (2026-07-28)
 

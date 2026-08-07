@@ -145,61 +145,61 @@
           }
         }
       },
-      "refreshRate": {
-        "title": "Refresh Rate",
-        "type": "number",
-        "minimum": 1800,
-        "placeholder": 1800,
-        "description": "Indicates the number of seconds between polls of the No-IP service."
-      },
-      "logging": {
-        "title": "Plugin Logging Level",
-        "description": "None turns off all messages from this plugin. Standard shows normal activity, warnings and errors. Debug adds detailed messages, and is what to use when reporting a problem. Default behaves the same as Standard.",
-        "type": "string",
-        "default": "",
-        "oneOf": [
-          {
-            "title": "Default (same as Standard)",
-            "enum": [""]
-          },
-          {
-            "title": "None",
-            "enum": ["none"]
-          },
-          {
-            "title": "Standard",
-            "enum": ["standard"]
-          },
-          {
-            "title": "Debug",
-            "enum": ["debug"]
-          }
-        ]
-      },
-      "allowInvalidCharacters": {
-        "title": "Allow Invalid Characters",
-        "type": "boolean",
-        "default": false,
-        "description": "Allow invalid characters in the configDeviceName. This is not recommended."
-      },
-      "autoRenewal": {
-        "title": "Enable Auto Domain Renewal (Global)",
-        "type": "boolean",
-        "default": false,
-        "description": "Automatically renew free No-IP domains to prevent expiration (can be overridden per device)"
-      },
-      "renewalInterval": {
-        "title": "Global Renewal Interval (Days)",
-        "type": "number",
-        "minimum": 1,
-        "maximum": 29,
-        "default": 25,
-        "description": "Number of days between automatic renewal attempts (recommended: 25 days for free accounts)"
-      },
       "options": {
-        "title": "Matter Options",
+        "title": "Advanced Settings",
         "type": "object",
         "properties": {
+          "refreshRate": {
+            "title": "Refresh Rate",
+            "type": "number",
+            "minimum": 1800,
+            "placeholder": 1800,
+            "description": "Indicates the number of seconds between polls of the No-IP service."
+          },
+          "logging": {
+            "title": "Plugin Logging Level",
+            "description": "None turns off all messages from this plugin. Standard shows normal activity, warnings and errors. Debug adds detailed messages, and is what to use when reporting a problem. Default behaves the same as Standard.",
+            "type": "string",
+            "default": "",
+            "oneOf": [
+              {
+                "title": "Default (same as Standard)",
+                "enum": [""]
+              },
+              {
+                "title": "None",
+                "enum": ["none"]
+              },
+              {
+                "title": "Standard",
+                "enum": ["standard"]
+              },
+              {
+                "title": "Debug",
+                "enum": ["debug"]
+              }
+            ]
+          },
+          "allowInvalidCharacters": {
+            "title": "Allow Invalid Characters",
+            "type": "boolean",
+            "default": false,
+            "description": "Allow invalid characters in the configDeviceName. This is not recommended."
+          },
+          "autoRenewal": {
+            "title": "Enable Auto Domain Renewal (Global)",
+            "type": "boolean",
+            "default": false,
+            "description": "Automatically renew free No-IP domains to prevent expiration (can be overridden per device)"
+          },
+          "renewalInterval": {
+            "title": "Global Renewal Interval (Days)",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 29,
+            "default": 25,
+            "description": "Number of days between automatic renewal attempts (recommended: 25 days for free accounts)"
+          },
           "preferMatter": {
             "title": "Prefer Matter",
             "type": "boolean",
@@ -260,6 +260,14 @@
         {
           "key": "options.allowInvalidCharacters",
           "notitle": true
+        },
+        {
+          "key": "options.autoRenewal",
+          "notitle": true
+        },
+        {
+          "key": "options.renewalInterval",
+          "notitle": true
         }
       ]
     },
@@ -273,10 +281,6 @@
           "type": "help",
           "helpvalue": "<h5>Homebridge Matter Support</h5><em class='primary-text'>Enable Matter support to use the Homebridge v2.0 Matter API. Requires Homebridge v2.0 with Matter enabled.</em>"
         },
-        "options.logging",
-        "options.autoRenewal",
-        "options.renewalInterval",
-        "options.allowInvalidCharacters",
         "options.preferMatter",
         "options.enableMatter"
       ]
