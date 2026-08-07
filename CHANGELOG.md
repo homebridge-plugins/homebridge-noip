@@ -18,6 +18,7 @@
 - fix: use the right my-ip.io address for ipv6, so the lookup can work
 - fix: stop two refreshes running at once, so no-ip never gets duplicate updates
 - fix: report a successful ip update as a success, not a warning
+- fix: stop the polling and renewal timers when homebridge shuts down
 
 ## v4.2.4 (2026-07-28)
 

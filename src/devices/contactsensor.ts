@@ -3,6 +3,7 @@
  * contactsensor.ts: @homebridge-plugins/homebridge-noip.
  */
 import type { CharacteristicValue, PlatformAccessory, Service } from 'homebridge'
+import type { Subscription } from 'rxjs'
 
 import type { NoIPPlatform } from '../platform.js'
 import type { devicesConfig } from '../settings.js'
@@ -22,6 +23,9 @@ import { deviceBase } from './device.js'
  * Each accessory may expose multiple services of different service types.
  */
 export class ContactSensor extends deviceBase {
+  /** Everything this device subscribed to, so shutdown() can stop it all. */
+  private readonly subscriptions: Subscription[] = []
+
   // Service
   private ContactSensor!: {
     Service: Service
@@ -75,22 +79,32 @@ export class ContactSensor extends deviceBase {
     // after the first false, and nothing ever raised the flag anyway - so a stalled
     // request could be joined by a second one, sending two updates for the same
     // hostname, which is the pattern No-IP's terms treat as abusive.
-    interval(this.deviceRefreshRate * 1000)
+    this.subscriptions.push(interval(this.deviceRefreshRate * 1000)
       .subscribe(async () => {
         await this.refreshStatus()
-      })
+      }))
 
     // Start renewal interval if auto-renewal is enabled
     if (this.autoRenewal) {
       const renewalIntervalMs = this.renewalIntervalDays * 24 * 60 * 60 * 1000 // Convert days to milliseconds
-      interval(renewalIntervalMs)
+      this.subscriptions.push(interval(renewalIntervalMs)
         .pipe(skipWhile(() => this.RenewalInProgress))
         .subscribe(async () => {
           await this.renewDomain()
-        })
+        }))
       // Log renewal setup (called asynchronously to avoid blocking constructor)
       this.infoLog(`Auto-renewal enabled for ${device.hostname} every ${this.renewalIntervalDays} days`)
     }
+  }
+
+  /**
+   * Stop polling and renewing. Homebridge emits 'shutdown' so a plugin can stop
+   * its own work; without this the intervals kept calling No-IP while the bridge
+   * was tearing down, and held the process open.
+   */
+  public shutdown(): void {
+    this.subscriptions.forEach(s => s.unsubscribe())
+    this.subscriptions.length = 0
   }
 
   /**

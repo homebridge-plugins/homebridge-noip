@@ -21,6 +21,12 @@ import { noip, PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
  * back to the standard HAP accessory registration so the plugin always works.
  */
 export class NoIPMatterPlatform extends NoIPPlatform {
+  protected override shutdownDevices(): void {
+    super.shutdownDevices()
+    this.matterPollers.forEach(poller => poller.unsubscribe())
+    this.matterPollers.clear()
+  }
+
   // Track cached Matter accessories (keyed by UUID)
   public readonly matterAccessories: Map<string, any> = new Map()
 

@@ -81,6 +81,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // Dynamic Platform plugins should only register new accessories after this event was fired,
     // in order to ensure they weren't added to homebridge already. This event can also be used
     // to start discovery of new accessories.
+    // Stop every device's polling and renewal on the way out
+    this.api.on('shutdown', () => this.shutdownDevices())
+
     this.api.on('didFinishLaunching', async () => {
       log.debug('Executed didFinishLaunching callback')
       // run the method to discover / register your devices as accessories
@@ -90,6 +93,11 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         await this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message ?? e)}`)
       }
     })
+  }
+
+  /** Stop the work each device started. The Matter platform extends this. */
+  protected shutdownDevices(): void {
+    this.accessories.forEach(accessory => (accessory as any).control?.shutdown?.())
   }
 
   /**
