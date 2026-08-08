@@ -47,8 +47,6 @@ export interface devicesConfig {
   ipProvider?: string
   firmware: string
   refreshRate?: number
-  updateRate?: number
-  pushRate?: number
   logging?: string
   delete?: boolean
   autoRenewal?: boolean
@@ -57,8 +55,6 @@ export interface devicesConfig {
 
 export interface options {
   refreshRate?: number
-  updateRate?: number
-  pushRate?: number
   logging?: string
   allowInvalidCharacters?: boolean
   autoRenewal?: boolean

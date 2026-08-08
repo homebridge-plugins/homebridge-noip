@@ -19,6 +19,7 @@
 - fix: stop two refreshes running at once, so no-ip never gets duplicate updates
 - fix: report a successful ip update as a success, not a warning
 - fix: stop the polling and renewal timers when homebridge shuts down
+- fix: stop confirming updateRate and pushRate in the log, when nothing reads either
 
 ## v4.2.4 (2026-07-28)
 

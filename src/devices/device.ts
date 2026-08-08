@@ -24,8 +24,6 @@ export abstract class deviceBase {
   // Config
   protected deviceLogging!: string
   protected deviceRefreshRate!: number
-  protected deviceUpdateRate!: number
-  protected devicePushRate!: number
   protected deviceFirmwareVersion!: string
 
   constructor(
@@ -67,14 +65,11 @@ export abstract class deviceBase {
     this.deviceRefreshRate = device.refreshRate ?? this.platform.platformRefreshRate ?? 1800
     const refreshRate = device.refreshRate ? 'Device Config' : this.platform.platformRefreshRate ? 'Platform Config' : 'Default'
     await this.debugLog(`Using ${refreshRate} refreshRate: ${this.deviceRefreshRate}`)
-    // updateRate
-    this.deviceUpdateRate = device.updateRate ?? this.platform.platformUpdateRate ?? 5
-    const updateRate = device.updateRate ? 'Device Config' : this.platform.platformUpdateRate ? 'Platform Config' : 'Default'
-    await this.debugLog(`Using ${updateRate} updateRate: ${this.deviceUpdateRate}`)
-    // pushRate
-    this.devicePushRate = device.pushRate ?? this.platform.platformPushRate ?? 1
-    const pushRate = device.pushRate ? 'Device Config' : this.platform.platformPushRate ? 'Platform Config' : 'Default'
-    await this.debugLog(`Using ${pushRate} pushRate: ${this.devicePushRate}`)
+    // updateRate and pushRate used to be parsed and echoed back here, which made
+    // them look accepted. Nothing ever read the resulting values - the only timer
+    // in the plugin uses refreshRate, and the only push is the DNS update itself -
+    // and neither key is in the settings schema, so an owner who set one saw it
+    // confirmed in the log and got no change at all.
   }
 
   async getDeviceConfigSettings(device: devicesConfig): Promise<void> {
@@ -82,8 +77,6 @@ export abstract class deviceBase {
     const properties = [
       'logging',
       'refreshRate',
-      'updateRate',
-      'pushRate',
       'external',
       'showRainSensor',
       'showValveSensor',
