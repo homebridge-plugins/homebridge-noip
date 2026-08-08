@@ -15,6 +15,7 @@ import { skipWhile, timeout } from 'rxjs/operators'
 import { request } from 'undici'
 
 import { noip } from '../settings.js'
+import { safeTimerMs } from '../utils.js'
 import { deviceBase } from './device.js'
 
 /**
@@ -79,14 +80,18 @@ export class ContactSensor extends deviceBase {
     // after the first false, and nothing ever raised the flag anyway - so a stalled
     // request could be joined by a second one, sending two updates for the same
     // hostname, which is the pattern No-IP's terms treat as abusive.
-    this.subscriptions.push(interval(this.deviceRefreshRate * 1000)
+    this.subscriptions.push(interval(safeTimerMs(this.deviceRefreshRate * 1000))
       .subscribe(async () => {
         await this.refreshStatus()
       }))
 
     // Start renewal interval if auto-renewal is enabled
     if (this.autoRenewal) {
-      const renewalIntervalMs = this.renewalIntervalDays * 24 * 60 * 60 * 1000 // Convert days to milliseconds
+      // Clamped, because a Node timer cannot hold more than about 24.85 days and
+      // silently drops to 1 ms if given more. The default of 25 days is already
+      // over that line, so auto-renewal was calling No-IP a thousand times a
+      // second instead of once a month.
+      const renewalIntervalMs = safeTimerMs(this.renewalIntervalDays * 24 * 60 * 60 * 1000)
       this.subscriptions.push(interval(renewalIntervalMs)
         .pipe(skipWhile(() => this.RenewalInProgress))
         .subscribe(async () => {

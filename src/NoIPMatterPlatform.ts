@@ -13,6 +13,7 @@ import { request } from 'undici'
 
 import { NoIPPlatform } from './platform.js'
 import { noip, PLATFORM_NAME, PLUGIN_NAME } from './settings.js'
+import { safeTimerMs } from './utils.js'
 
 /**
  * NoIPMatterPlatform
@@ -178,7 +179,7 @@ export class NoIPMatterPlatform extends NoIPPlatform {
     }
 
     refresh()
-    this.matterPollers.set(uuid, interval(refreshRate * 1000).subscribe(() => refresh()))
+    this.matterPollers.set(uuid, interval(safeTimerMs(refreshRate * 1000)).subscribe(() => refresh()))
   }
 
   /**
