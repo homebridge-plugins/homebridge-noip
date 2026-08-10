@@ -21,6 +21,7 @@
 - fix: stop the polling and renewal timers when homebridge shuts down
 - fix: stop confirming updateRate and pushRate in the log, when nothing reads either
 - fix: stop the auto renewal timer firing a thousand times a second, instead of once a month
+- chore(deps): dependency updates
 
 ## v4.2.4 (2026-07-28)
 
