@@ -3,6 +3,7 @@
 ### Changed
 
 - fix: keep debug warnings, errors and successes out of the log unless debug is on
+- chore(deps): dependency updates
 
 ## v4.2.5 (2026-08-09)
 
