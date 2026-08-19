@@ -8,7 +8,7 @@
   "footerDisplay": "Your No-IP account has been linked. Please raise any issues on our [project page](https://github.com/homebridge-plugins/homebridge-noip/issues).\n\nIf you would like to have other features, please open a [feature request](https://github.com/homebridge-plugins/homebridge-noip/issues/new/choose).",
   "schema": {
     "type": "object",
-    "required": ["name", "logging"],
+    "required": ["name"],
     "properties": {
       "name": {
         "type": "string",
@@ -214,7 +214,8 @@
             "default": true,
             "description": "Enable Homebridge Matter support (requires Homebridge v2.0 with Matter enabled)."
           }
-        }
+        },
+        "required": ["logging"]
       }
     }
   },

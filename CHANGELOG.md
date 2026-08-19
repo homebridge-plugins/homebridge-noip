@@ -1,3 +1,9 @@
+## v4.2.7 (Pending Release)
+
+### Changed
+
+- fix(schema): require the plugin logging level and drop the stray top-level required entry
+
 ## v4.2.6 (2026-08-13)
 
 ### Changed
