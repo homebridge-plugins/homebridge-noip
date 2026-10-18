@@ -3,6 +3,7 @@
 ### Changed
 
 - fix(schema): require the plugin logging level and drop the stray top-level required entry
+- chore(deps): dependency updates
 
 ## v4.2.6 (2026-08-13)
 
