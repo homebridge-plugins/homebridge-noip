@@ -1,3 +1,9 @@
+## v4.2.8 (Pending Release)
+
+### Changed
+
+- ci: update github actions to their latest versions
+
 ## v4.2.7 (2026-10-18)
 
 ### Changed
