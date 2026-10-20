@@ -3,6 +3,7 @@
 ### Changed
 
 - ci: update github actions to their latest versions (#197)
+- chore(deps): dependency updates
 
 ## v4.2.7 (2026-10-18)
 
