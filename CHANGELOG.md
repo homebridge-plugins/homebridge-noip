@@ -4,6 +4,7 @@
 
 - ci: update github actions to their latest versions (#197)
 - chore(deps): dependency updates
+- fix(schema): give the default logging choice a value, so the ui stops flagging it as missing
 
 ## v4.2.7 (2026-10-18)
 
