@@ -57,16 +57,22 @@ export abstract class deviceBase {
   async getDeviceLogSettings(device: devicesConfig): Promise<void> {
     // The config UI saves 'default' for "use the plugin logging level", which
     // must inherit exactly as a missing value always has.
-    const deviceLogging = device.logging === 'default' ? undefined : device.logging
+    const deviceLogging = device.logging === 'default'
+      ? undefined
+      : device.logging
     this.deviceLogging = deviceLogging ?? this.platform.platformLogging ?? 'standard'
-    const logging = deviceLogging ? 'Device Config' : this.platform.platformLogging ? 'Platform Config' : 'Default'
+    const logging = deviceLogging
+      ? 'Device Config'
+      : this.platform.platformLogging ? 'Platform Config' : 'Default'
     await this.debugLog(`Using ${logging} Logging: ${this.deviceLogging}`)
   }
 
   async getDeviceRateSettings(device: devicesConfig): Promise<void> {
     // refreshRate
     this.deviceRefreshRate = device.refreshRate ?? this.platform.platformRefreshRate ?? 1800
-    const refreshRate = device.refreshRate ? 'Device Config' : this.platform.platformRefreshRate ? 'Platform Config' : 'Default'
+    const refreshRate = device.refreshRate
+      ? 'Device Config'
+      : this.platform.platformRefreshRate ? 'Platform Config' : 'Default'
     await this.debugLog(`Using ${refreshRate} refreshRate: ${this.deviceRefreshRate}`)
     // updateRate and pushRate used to be parsed and echoed back here, which made
     // them look accepted. Nothing ever read the resulting values - the only timer
