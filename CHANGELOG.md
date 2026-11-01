@@ -4,6 +4,7 @@
 
 - ci: update github actions to their latest versions (#197)
 - fix(schema): give the default logging choice a value, so the ui stops flagging it as missing
+- docs: add homebridge v1.11.4 support, the matter option names and auto domain renewal
 
 ## v4.2.7 (2026-10-18)
 
