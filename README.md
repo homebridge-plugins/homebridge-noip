@@ -26,7 +26,7 @@ Homebridge plugin to keep your No-IP hostnames updated with your current IP addr
 
 - To use this plugin, you will need to already have:
   - [Node](https://nodejs.org): latest version of `v22`, `v24` or `v26` - any other major version is not supported.
-  - [Homebridge](https://homebridge.io): `v2` - refer to link for more information and installation instructions.
+  - [Homebridge](https://homebridge.io): `v1.11.4` or later, or `v2` - refer to link for more information and installation instructions.
 
 ### Setup
 
@@ -38,8 +38,11 @@ Homebridge plugin to keep your No-IP hostnames updated with your current IP addr
 ### Features
 
 - **Matter** support is available when running Homebridge v2.0+ with Matter enabled:
-  - The plugin chooses Matter or HAP automatically at runtime based on your Homebridge environment and the `enableMatter`/`preferMatter` config options.
+  - The plugin chooses Matter or HAP automatically at runtime based on your Homebridge environment and the `options.enableMatter`/`options.preferMatter` config options (both on by default).
   - If Matter is unavailable or disabled, the plugin falls back to standard HAP registration automatically.
+- **Enable Auto Domain Renewal** (off by default) sends your current IP address to No-IP for your hostname on a schedule, meant for free No-IP hostnames:
+  - The schedule is every 25 days unless you change **Renewal Interval (Days)**.
+  - Both settings can be set for all hostnames, or for each hostname on its own.
 
 ### Help/About
 
