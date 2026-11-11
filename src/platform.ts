@@ -186,7 +186,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
           existingAccessory.displayName = 'Unnamed Accessory'
         }
 
-        existingAccessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
+        existingAccessory.context.serialNumber = device.ipv4or6 === 'ipv6'
+          ? await this.publicIPv6(device)
+          : await this.publicIPv4(device)
         existingAccessory.context.model = 'DUC'
         existingAccessory.context.version = await this.getVersion()
         this.api.updatePlatformAccessories([existingAccessory])
@@ -217,7 +219,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         accessory.displayName = 'Unnamed Accessory'
       }
 
-      accessory.context.serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
+      accessory.context.serialNumber = device.ipv4or6 === 'ipv6'
+        ? await this.publicIPv6(device)
+        : await this.publicIPv4(device)
       accessory.context.model = 'DUC'
       accessory.context.version = await this.getVersion()
       // the accessory does not yet exist, so we need to create it
@@ -243,7 +247,15 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   async publicIPv4(device: devicesConfig) {
     try {
-      const { body, statusCode } = await request(device.ipProvider === 'ipify' ? ipify_v4 : device.ipProvider === 'getmyip' ? getmyip_v4 : device.ipProvider === 'ipapi' ? ipapi_v4 : device.ipProvider === 'myip' ? myip_v4 : ipinfo_v4, {
+      const { body, statusCode } = await request(device.ipProvider === 'ipify'
+        ? ipify_v4
+        : device.ipProvider === 'getmyip'
+          ? getmyip_v4
+          : device.ipProvider === 'ipapi'
+            ? ipapi_v4
+            : device.ipProvider === 'myip'
+              ? myip_v4
+              : ipinfo_v4, {
         method: 'GET',
       })
       const pubIp: any = await body.json()
@@ -258,7 +270,15 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   async publicIPv6(device: devicesConfig) {
     try {
-      const { body, statusCode } = await request(device.ipProvider === 'ipify' ? ipify_v6 : device.ipProvider === 'getmyip' ? getmyip_v6 : device.ipProvider === 'ipapi' ? ipapi_v6 : device.ipProvider === 'myip' ? myip_v6 : ipinfo_v6, {
+      const { body, statusCode } = await request(device.ipProvider === 'ipify'
+        ? ipify_v6
+        : device.ipProvider === 'getmyip'
+          ? getmyip_v6
+          : device.ipProvider === 'ipapi'
+            ? ipapi_v6
+            : device.ipProvider === 'myip'
+              ? myip_v6
+              : ipinfo_v6, {
         method: 'GET',
       })
       const pubIp: any = await body.json()
@@ -295,7 +315,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       : 'debugMode'
     // 'default' (what the config UI saves) is not one of the three above, so it
     // lands on 'debugMode' exactly as an empty or missing value does.
-    const logging = this.config.options?.logging && this.config.options.logging !== 'default' ? 'Platform Config' : 'Default'
+    const logging = this.config.options?.logging && this.config.options.logging !== 'default'
+      ? 'Platform Config'
+      : 'Default'
     await this.debugLog(`Using ${logging} Logging: ${this.platformLogging}`)
   }
 

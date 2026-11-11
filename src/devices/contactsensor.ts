@@ -194,9 +194,21 @@ export class ContactSensor extends deviceBase {
     }
     this.SensorUpdateInProgress = true
     try {
-      const ip = this.device.ipv4or6 === 'ipv6' ? await this.platform.publicIPv6(this.device) : await this.platform.publicIPv4(this.device)
-      const ipv4or6 = this.device.ipv4or6 === 'ipv6' ? 'IPv6' : 'IPv4'
-      const ipProvider = this.device.ipProvider === 'ipify' ? 'ipify.org' : this.device.ipProvider === 'getmyip' ? 'getmyip.dev' : this.device.ipProvider === 'ipapi' ? 'ipapi.co' : this.device.ipProvider === 'myip' ? 'my-ip.io' : 'ipinfo.io'
+      const ip = this.device.ipv4or6 === 'ipv6'
+        ? await this.platform.publicIPv6(this.device)
+        : await this.platform.publicIPv4(this.device)
+      const ipv4or6 = this.device.ipv4or6 === 'ipv6'
+        ? 'IPv6'
+        : 'IPv4'
+      const ipProvider = this.device.ipProvider === 'ipify'
+        ? 'ipify.org'
+        : this.device.ipProvider === 'getmyip'
+          ? 'getmyip.dev'
+          : this.device.ipProvider === 'ipapi'
+            ? 'ipapi.co'
+            : this.device.ipProvider === 'myip'
+              ? 'my-ip.io'
+              : 'ipinfo.io'
       const { body, statusCode } = await request(noip, {
         method: 'GET',
         query: {
@@ -270,7 +282,10 @@ export class ContactSensor extends deviceBase {
   }
 
   private async timeout(): Promise<void> {
-    this.interval.pipe(timeout({ each: 1000, with: () => throwError(() => new Error('nohost')) })).subscribe({ error: this.errorLog })
+    this.interval.pipe(timeout({
+      each: 1000,
+      with: () => throwError(() => new Error('nohost')),
+    })).subscribe({ error: this.errorLog })
   }
 
   /**
