@@ -116,7 +116,9 @@ export class NoIPMatterPlatform extends NoIPPlatform {
     const displayName = this.clampMatterDisplayName(device.configDeviceName
       ? await this.validateAndCleanDisplayName(device.configDeviceName, 'configDeviceName', device.configDeviceName)
       : await this.validateAndCleanDisplayName(hostname, 'hostname', hostname)) || 'Unnamed Accessory'
-    const serialNumber = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
+    const serialNumber = device.ipv4or6 === 'ipv6'
+      ? await this.publicIPv6(device)
+      : await this.publicIPv4(device)
     const version = await this.getVersion()
 
     if (existingAccessory) {
@@ -188,7 +190,9 @@ export class NoIPMatterPlatform extends NoIPPlatform {
    * mirroring the HAP contact sensor behaviour.
    */
   private async checkHostnameSync(device: devicesConfig): Promise<boolean> {
-    const currentIP = device.ipv4or6 === 'ipv6' ? await this.publicIPv6(device) : await this.publicIPv4(device)
+    const currentIP = device.ipv4or6 === 'ipv6'
+      ? await this.publicIPv6(device)
+      : await this.publicIPv4(device)
     const { body, statusCode } = await request(noip, {
       method: 'GET',
       headers: {
