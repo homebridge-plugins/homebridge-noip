@@ -1,3 +1,9 @@
+## v4.2.9 (Pending Release)
+
+### Changed
+
+- chore(deps): dependency updates
+
 ## v4.2.8 (2026-11-14)
 
 ### Changed
