@@ -58,7 +58,7 @@
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^2.3.0",
     "rxjs": "^7.8.2",
-    "undici": "^8.12.4",
+    "undici": "^8.13.0",
     "validator": "^13.15.35"
   },
   "devDependencies": {
